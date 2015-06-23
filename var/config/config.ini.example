@@ -1,0 +1,14 @@
+[database]
+adapter  = Mysql
+host     = localhost
+username = yourUsername
+password = yourPassword
+name     = yourDbName
+
+[application]
+controllersDir = app/controllers/
+modelsDir      = app/models/
+viewsDir       = app/views/
+libraryDir     = app/library/
+pluginsDir     = app/plugins/
+baseUri        = /

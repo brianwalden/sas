@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="end">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        {{ get_title() }}
+
+        {{ assets.outputCss() }}
+    </head>
+    <body>
+        <nav class="navbar navbar-bw">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand navlink-index" href="/">St. Anthony Search</a>
+                        </div>
+
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav">
+                                <!--li class="navlink-contact"><a href="/contact">Contact</a></li>
+                                <li class="navlink-resume"><a href="/resume">Resume</a></li>
+                                <li class="navlink-transcript"><a href="/transcript">Transcript</a></li-->
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+                    {{ content() }}
+                </div>
+            </div>
+        <div>
+
+        {{ assets.outputJs() }}
+
+        <script>
+            $(document).ready(function() { initializePage('{{controller}}'); });
+        </script>
+    </body>
+</html>
