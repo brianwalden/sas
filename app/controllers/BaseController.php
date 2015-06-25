@@ -4,7 +4,7 @@ namespace Brianwalden\SAS\Controllers;
 
 use Phalcon\Mvc\Controller;
 
-class BaseController extends Controller
+abstract class BaseController extends Controller
 {
     const TITLE_BASE = 'St. Anthony Search';
     const TITLE_SEPARATOR = ' | ';
