@@ -21,7 +21,7 @@ $di = new FactoryDefault();
 /**
  * We register the events manager
  */
-$di->set('dispatcher', function () use ($di) {
+$di->set('dispatcher', function () use ($di, $config) {
     $eventsManager = new EventsManager;
     
     /**
@@ -34,7 +34,7 @@ $di->set('dispatcher', function () use ($di) {
      */
     $eventsManager->attach('dispatch:beforeException', new NotFoundPlugin);
     $dispatcher = new Dispatcher;
-    $dispatcher->setDefaultNamespace('Brianwalden\SAS\Controllers');
+    $dispatcher->setDefaultNamespace($config->application->defaultNs);
     $dispatcher->setEventsManager($eventsManager);
     return $dispatcher;
 });

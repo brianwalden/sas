@@ -6,9 +6,13 @@ password = yourPassword
 name     = yourDbName
 
 [application]
-controllersDir = app/controllers/
-modelsDir      = app/models/
-viewsDir       = app/views/
-libraryDir     = app/library/
-pluginsDir     = app/plugins/
-baseUri        = /
+baseUri  = /
+viewsDir = app/views/
+defaultNs = Brianwalden\SAS\Controllers
+
+[namespaces]
+Brianwalden\SAS\Controllers = app/controllers/
+Brianwalden\SAS\Models      = app/models/
+Brianwalden\SAS\Library     = app/library/
+Brianwalden\SAS\Plugins     = app/plugins/
+Carbon                      = app/library/vendor/Carbon/src/Carbon
