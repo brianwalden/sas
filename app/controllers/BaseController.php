@@ -52,7 +52,7 @@ abstract class BaseController extends Controller
      *
      * @return void
      */
-    protected function setTitle($parts = [])
+    protected function setTitle(array $parts = array())
     {
         foreach (['base', 'controller', 'action'] as $part) {
             $isPartSet = isset($parts[$part]);
@@ -77,7 +77,7 @@ abstract class BaseController extends Controller
      *
      * @return void
      */
-    protected function addAssets($assets = [])
+    protected function addAssets(array $assets = array())
     {
         $validMethods = array_keys(static::$defaultAssets);
 

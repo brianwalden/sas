@@ -47,9 +47,5 @@
         <div>
 
         {{ assets.outputJs() }}
-
-        <script>
-            $(document).ready(function() { initializePage('{{controller}}'); });
-        </script>
     </body>
 </html>
