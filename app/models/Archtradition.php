@@ -4,24 +4,16 @@ namespace Brianwalden\SAS\Models;
 
 class Archtradition extends BaseModel
 {
+    const IS_LOOKUP = true;
+
     public $id;
 
     public $archtradition;
 
     public function initialize()
     {
-        $this->hasMany(
-            'id',
-            static::nsModel('Tradition'),
-            'archtraditionId',
-            static::foreignKey('archtraditionId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ArchtraditionProp'),
-            'archtraditionId',
-            static::foreignKey('archtraditionId')
-        );
+        $this->relationship('hasMany', 'Tradition', 'archtraditionId', false);
+        $this->relationship('hasMany', 'ArchtraditionProp', 'archtraditionId', false);
     }
 
     public static function uniqueKeys()

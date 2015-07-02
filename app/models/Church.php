@@ -16,36 +16,11 @@ class Church extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'parishId',
-            static::nsModel('Parish'),
-            'id',
-            static::foreignKey('parishId')
-        );
-        $this->belongsTo(
-            'religiousId',
-            static::nsModel('Religious'),
-            'id',
-            static::foreignKey('religiousId')
-        );
-        $this->belongsTo(
-            'cityId',
-            static::nsModel('City'),
-            'id',
-            static::foreignKey('cityId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Event'),
-            'churchId',
-            static::foreignKey('churchId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ChurchProp'),
-            'churchId',
-            static::foreignKey('churchId')
-        );
+        $this->relationship('belongsTo', 'Parish', 'parishId', false);
+        $this->relationship('belongsTo', 'Religious', 'religiousId', false);
+        $this->relationship('belongsTo', 'City', 'cityId', false);
+        $this->relationship('hasMany', 'Event', 'churchId', false);
+        $this->relationship('hasMany', 'ChurchProp', 'churchId', false);
     }
 
     public static function uniqueKeys()

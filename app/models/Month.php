@@ -4,6 +4,8 @@ namespace Brianwalden\SAS\Models;
 
 class Month extends BaseModel
 {
+    const IS_LOOKUP = true;
+
     public $id;
 
     public $month;
@@ -13,15 +15,8 @@ class Month extends BaseModel
         //alias EventStart points to `event`.`startMonth`
         //alias EventStop points to `event`.`stopMonth`
         foreach (['start', 'stop'] as $prefix) {
-            $field = "{$prefix}Month";
-            $options = static::foreignKey($field);
-            $options['alias'] = "Event{ucfirst($prefix)}";
-            $this->hasMany(
-                'id',
-                static::nsModel('Event'),
-                $field,
-                $options
-            );
+            $alias = 'Event' . ucfirst($prefix);
+            $this->relationship('hasMany', 'Event', "{$prefix}Month", false, $alias);
         }
     }
 

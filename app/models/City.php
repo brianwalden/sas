@@ -12,24 +12,9 @@ class City extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'countyId',
-            static::nsModel('County'),
-            'id',
-            static::foreignKey('countyId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Church'),
-            'cityId',
-            static::foreignKey('cityId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('CityProp'),
-            'cityId',
-            static::foreignKey('cityId')
-        );
+        $this->relationship('belongsTo', 'County', 'countyId', false);
+        $this->relationship('hasMany', 'Church', 'cityId', false);
+        $this->relationship('hasMany', 'CityProp', 'cityId', false);
     }
 
     public static function uniqueKeys()

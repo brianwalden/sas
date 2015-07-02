@@ -4,6 +4,8 @@ namespace Brianwalden\SAS\Models;
 
 class Province extends BaseModel
 {
+    const IS_LOOKUP = true;
+    
     public $id;
 
     public $province;
@@ -12,24 +14,9 @@ class Province extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'suiIurisId',
-            static::nsModel('SuiIuris'),
-            'id',
-            static::foreignKey('suiIurisId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Diocese'),
-            'provinceId',
-            static::foreignKey('provinceId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ProvinceProp'),
-            'provinceId',
-            static::foreignKey('provinceId')
-        );
+        $this->relationship('belongsTo', 'SuiIuris', 'suiIurisId', false);
+        $this->relationship('hasMany', 'Diocese', 'provinceId', false);
+        $this->relationship('hasMany', 'ProvinceProp', 'provinceId', false);
     }
 
     public static function uniqueKeys()

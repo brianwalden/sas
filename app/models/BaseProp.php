@@ -23,18 +23,8 @@ abstract class BaseProp extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            static::baseId(),
-            static::baseModel(),
-            'id',
-            static::foreignKey(static::baseId())
-        );
-        $this->belongsTo(
-            static::baseId(true),
-            static::baseModel(true),
-            'id',
-            static::foreignKey(static::baseId(true))
-        );
+        $this->relationship('belongsTo', static::baseModel(), static::baseId(), false);
+        $this->relationship('belongsTo', static::baseModel(true), static::baseId(true), false);
     }
 
     public function validation()
@@ -54,12 +44,12 @@ abstract class BaseProp extends BaseModel
 
     public static function baseModel($isAttrTable = false)
     {
-        return static::nsModel(ucfirst(static::getBase($attr)));
+        return ucfirst(static::getBase($isAttrTable));
     }
 
     public static function baseId($isAttrTable = false)
     {
-        return static::getBase($attr) . 'Id';
+        return static::getBase($isAttrTable) . 'Id';
     }
 
     protected static function getBase($isAttrTable = false)
@@ -76,7 +66,7 @@ abstract class BaseProp extends BaseModel
             $attr = ($this->$attrId) ?
                 call_user_func([static::baseModel(true), 'findFirst'], $this->$attrId) :
                 null;
-            $message = 'Could Not Find Matching Attribute: $attrId';
+            $message = "Could Not Find Matching Attribute: $attrId";
 
             if ($attr) {
                 $message = '';

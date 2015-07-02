@@ -4,6 +4,8 @@ namespace Brianwalden\SAS\Models;
 
 class SuiIuris extends BaseModel
 {
+    const IS_LOOKUP = true;
+    
     public $id;
 
     public $suiIuris;
@@ -12,24 +14,10 @@ class SuiIuris extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'riteId',
-            static::nsModel('Rite'),
-            'id',
-            static::foreignKey('riteId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Province'),
-            'suiIurisId',
-            static::foreignKey('suiIurisId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ReligiousTop'),
-            'suiIurisId',
-            static::foreignKey('suiIurisId')
-        );
+        $this->relationship('belongsTo', 'Rite', 'riteId', false);
+        $this->relationship('hasMany', 'Province', 'suiIurisId', false);
+        $this->relationship('hasMany', 'ReligiousTop', 'suiIurisId', false);
+        $this->relationship('hasMany', 'SuiIurisProp', 'suiIurisId', false);
     }
 
     public static function uniqueKeys()

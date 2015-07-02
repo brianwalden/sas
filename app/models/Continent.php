@@ -4,24 +4,16 @@ namespace Brianwalden\SAS\Models;
 
 class Continent extends BaseModel
 {
+    const IS_LOOKUP = true;
+
     public $id;
 
     public $continent;
 
     public function initialize()
     {
-        $this->hasMany(
-            'id',
-            static::nsModel('Country'),
-            'continentId',
-            static::foreignKey('continentId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ContinentProp'),
-            'continentId',
-            static::foreignKey('continentId')
-        );
+        $this->relationship('hasMany', 'Country', 'continentId', false);
+        $this->relationship('hasMany', 'ContinentProp', 'continentId', false);
     }
 
     public static function uniqueKeys()

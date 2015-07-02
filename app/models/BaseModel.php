@@ -4,10 +4,19 @@ namespace Brianwalden\SAS\Models;
 
 use Phalcon\Mvc\Model;
 use Phalcon\Db\RawValue;
+use Phalcon\Text;
 
 abstract class BaseModel extends Model
 {
     const BASE_NS = 'Brianwalden\SAS\Models\\';
+
+    const IS_LOOKUP = false;
+
+    public function getSource()
+    {
+        //Phalcon can't find camelcase table names
+        return lcfirst(Text::camelize(parent::getSource()));
+    }
 
     public function beforeValidation()
     {
@@ -26,20 +35,14 @@ abstract class BaseModel extends Model
         return (bool) $success;
     }
 
-    public static function nsModel($model)
+    public static function sqlModel($model)
     {
         return static::BASE_NS . $model;
     }
 
-    public static function foreignKey($field = '', $allowNull = false)
+    public static function nsModel($model)
     {
-        $field = ($field) ? ': ' . $field : '';
-        return [
-            "foreignKey" => [
-                'allowNull' => (bool) $allowNull,
-                'message' => 'Foreign Key Violation' . $field,
-            ],
-        ];
+        return '\\' . static::sqlModel($model);
     }
 
     public static function uniqueKeys()
@@ -64,6 +67,28 @@ abstract class BaseModel extends Model
         return []; //['field1', 'field2', 'etc'];
     }
 
+    protected function relationship($relationship, $model, $field, $foreignKey = null, $alias = null)
+    {
+        $success = false;
+        $relationships = ['belongsTo' => [$field, 'id'], 'hasMany' => ['id', $field]];
+        $options = ['alias' => ($alias) ? $alias : $model];
+
+        if ($foreignKey !== null) {
+            $options['foreignKey'] = [
+                'allowNull' => (bool) $foreignKey,
+                'message' => "Foreign Key Violation: $field",
+            ];
+        }
+
+        $r = (empty($relationships[$relationship])) ? null : $relationships[$relationship];
+        if ($r) {
+            $this->$relationship($r[0], static::sqlModel($model), $r[1], $options);
+            $success = true;
+        }
+
+        return $success;
+    }
+
     protected function validateUniqueKeys($success = true)
     {
         if ($success) {
@@ -80,7 +105,7 @@ abstract class BaseModel extends Model
                             implode(', ', $fields) : $fields;
                         $this->validate(new Uniqueness([
                             'field' => $fields,
-                            'message' => 'Unique Key Violation: ' . $message,
+                            'message' => "Unique Key Violation: $message",
                         ]));
 
                         if ($this->validationHasFailed()) {

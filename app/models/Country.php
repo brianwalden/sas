@@ -16,24 +16,9 @@ class Country extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'continentId',
-            static::nsModel('Continent'),
-            'id',
-            static::foreignKey('continentId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('State'),
-            'countryId',
-            static::foreignKey('countryId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('CountryProp'),
-            'countryId',
-            static::foreignKey('countryId')
-        );
+        $this->relationship('belongsTo', 'Continent', 'continentId', false);
+        $this->relationship('hasMany', 'State', 'countryId', false);
+        $this->relationship('hasMany', 'CountryProp', 'countryId', false);
     }
 
     public static function uniqueKeys()

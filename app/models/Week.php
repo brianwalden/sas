@@ -4,6 +4,8 @@ namespace Brianwalden\SAS\Models;
 
 class Week extends BaseModel
 {
+    const IS_LOOKUP = true;
+    
     public $id;
 
     public $week;
@@ -13,15 +15,8 @@ class Week extends BaseModel
         //alias EventStart points to `event`.`startWeek`
         //alias EventStop point to `event`.`stopWeek`
         foreach (['start', 'stop'] as $prefix) {
-            $field = "{$prefix}Week";
-            $options = static::foreignKey($field);
-            $options['alias'] = "Event{ucfirst($prefix)}";
-            $this->hasMany(
-                'id',
-                static::nsModel('Event'),
-                $field,
-                $options
-            );
+            $alias = 'Event' . ucfirst($prefix);
+            $this->relationship('hasMany', 'Event', "{$prefix}Week", false, $alias);
         }
     }
 

@@ -14,24 +14,9 @@ class State extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'countryId',
-            static::nsModel('Country'),
-            'id',
-            static::foreignKey('countryId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('County'),
-            'stateId',
-            static::foreignKey('stateId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('StateProp'),
-            'stateId',
-            static::foreignKey('stateId')
-        );
+        $this->relationship('belongsTo', 'Country', 'countryId', false);
+        $this->relationship('hasMany', 'County', 'stateId', false);
+        $this->relationship('hasMany', 'StateProp', 'stateId', false);
     }
 
     public static function uniqueKeys()

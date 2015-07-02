@@ -4,6 +4,8 @@ namespace Brianwalden\SAS\Models;
 
 abstract class BaseAttr extends BaseModel
 {
+    const IS_LOOKUP = 'attr';
+
     const BASE_TABLE = 'putBaseTableNameHere';
 
     public $id;
@@ -23,12 +25,7 @@ abstract class BaseAttr extends BaseModel
 
     public function initialize()
     {
-        $this->hasMany(
-            'id',
-            static::propModel(),
-            static::attrId(),
-            static::foreignKey(static::attrId())
-        );
+        $this->relationship('hasMany', static::propModel(), static::attrId(), false);
     }
 
     public static function uniqueKeys()
@@ -43,7 +40,7 @@ abstract class BaseAttr extends BaseModel
 
     public static function propModel()
     {
-        return static::nsModel(ucfirst(static::BASE_TABLE . 'Prop'));
+        return ucfirst(static::BASE_TABLE . 'Prop');
     }
 
     public static function attrId()

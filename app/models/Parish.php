@@ -14,24 +14,9 @@ class Parish extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'provinceId',
-            static::nsModel('Province'),
-            'id',
-            static::foreignKey('provinceId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Church'),
-            'parishId',
-            static::foreignKey('parishId')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('ParishProp'),
-            'parishId',
-            static::foreignKey('parishId')
-        );
+        $this->relationship('belongsTo', 'Province', 'provinceId', false);
+        $this->relationship('hasMany', 'Church', 'parishId', false);
+        $this->relationship('hasMany', 'ParishProp', 'parishId', false);
     }
 
     public static function uniqueKeys()

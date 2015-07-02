@@ -2,6 +2,8 @@
 
 namespace Brianwalden\SAS\Models;
 
+use Brianwalden\SAS\Library\Temporal;
+
 class Event extends BaseModel
 {
     public $id;
@@ -36,46 +38,19 @@ class Event extends BaseModel
     
     public function initialize()
     {
-        $this->belongsTo(
-            'eventTypeId',
-            static::nsModel('EventType'),
-            'id',
-            static::foreignKey('eventTypeId')
-        );
-        $this->belongsTo(
-            'eventFilterId',
-            static::nsModel('EventFilter'),
-            'id',
-            static::foreignKey('eventFilterId')
-        );
-        $this->belongsTo(
-            'churchId',
-            static::nsModel('Church'),
-            'id',
-            static::foreignKey('churchId')
-        );
+        $this->relationship('belongsTo', 'EventType', 'eventTypeId', false);
+        $this->relationship('belongsTo', 'EventFilter', 'eventFilterId', false);
+        $this->relationship('belongsTo', 'Church', 'churchId', false);
 
         //startMonth, stopMonth, startWeek, stopWeek, startDay, stopDay
         foreach (['Month', 'Week', 'Day'] as $model) {
             foreach (['start', 'stop'] as $prefix) {
                 $field = "$prefix$model";
-                $options = static::foreignKey($field);
-                $options['alias'] = ucfirst($field);
-                $this->belongsTo(
-                    $field,
-                    static::nsModel($model),
-                    'id',
-                    $options
-                );
+                $this->relationship('belongsTo', $model, $field, false, ucfirst($field));
             }
         }
 
-        $this->hasMany(
-            'id',
-            static::nsModel('EventProp'),
-            'eventId',
-            static::foreignKey('eventId')
-        );
+        $this->relationship('hasMany', 'EventProp', 'eventId', false);
     }
 
     public static function uniqueKeys()

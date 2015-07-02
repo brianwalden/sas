@@ -12,24 +12,9 @@ class Religious2 extends BaseModel
 
     public function initialize()
     {
-        $this->belongsTo(
-            'religious3Id',
-            static::nsModel('Religious3'),
-            'id',
-            static::foreignKey('religious3Id')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Religious1'),
-            'religious2Id',
-            static::foreignKey('religious2Id')
-        );
-        $this->hasMany(
-            'id',
-            static::nsModel('Religious2Prop'),
-            'religious2Id',
-            static::foreignKey('religious2Id')
-        );
+        $this->relationship('belongsTo', 'Religious3', 'religious3Id', false);
+        $this->relationship('hasMany', 'Religious1', 'religious2Id', false);
+        $this->relationship('hasMany', 'Religious2Prop', 'religious2Id', false);
     }
 
     public static function uniqueKeys()
