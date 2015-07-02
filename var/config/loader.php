@@ -7,7 +7,6 @@ $namespaces = [];
 $configArray = $config->toArray();
 
 foreach ($configArray['namespaces'] as $namespace => $path) {
-    error_log("|$namespace|$path|");
     $namespaces[$namespace] = APP_PATH . $path;
 }
 

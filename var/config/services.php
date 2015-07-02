@@ -11,6 +11,9 @@ use Phalcon\Flash\Session as FlashSession;
 use Phalcon\Events\Manager as EventsManager;
 use Brianwalden\SAS\Plugins\SecurityPlugin;
 use Brianwalden\SAS\Plugins\NotFoundPlugin;
+use Brianwalden\SAS\Library\Lookup;
+use Brianwalden\SAS\Library\ModelShared;
+use Brianwalden\SAS\Library\Temporal;
 
 /**
  * The FactoryDefault Dependency Injector automatically register the right
@@ -107,8 +110,21 @@ $di->set('flash', function () {
 });
 
 /**
- * Register a user component
+ * A class for lookup tables
  */
-$di->set('elements', function () {
-    return new Elements();
+$di->setShared('lookup', function () {
+    return new Lookup();
+});
+/**
+ * Shared custom class for easily accessing models
+ */
+$di->setShared('myModel', function () {
+    return new ModelShared();
+});
+
+/**
+ * Our custom DateTime Class, registered to make it available in the view
+ */
+$di->set('temporal', function () {
+    return new Temporal();
 });
