@@ -8,66 +8,74 @@ class Event
 
     protected $lookup;
 
-    protected $query;
-
-    public function __construct(array $options = array())
+    public function __construct(Temporal $temporal = null)
     {
-        foreach (['time', 'timezone'] as $option) {
-            if (!array_key_exists($option, $options)) {
-                $options[$option] = null;
-            }
-        }
-
-        $this->temporal = new Temporal($options['time'], $options['timezone']);
-        $this->lookup = new Lookup();
-        $this->query = new Query();
+        $this->lookup = Lookup::getshared();
+        $this->temporal = ($temporal) ? $temporal : new Temporal(null, null, $this->lookup);
     }
 
-    public function getToday($type = null, $name = null)
+    public function getToday($type = null, $name = null, $onlyNow = false)
     {
-        return $this->find($this->today($this->eventTypeAndName($type, $name)));
-    }
-
-    public function getNow($type = null, $name = null)
-    {
-        return $this->find($this->today($this->eventTypeAndName($type, $name), true));
+        return $this->find($this->today($this->eventTypeAndName($type, $name), $onlyNow));
     }
 
     public function find(array $options = array())
     {
-        $exactOptions = ['event', 'eventType', 'eventFilter', 'churchId'];
+        $exactOptions = ['event', 'eventTypeId', 'eventFilterId', 'churchId'];
         $rangeOptions = ['date', 'month', 'week', 'day', 'time'];
-        $conditions = '';
-        $bind = [];
+        $phql = 'SELECT e.churchId, n.value AS nickname, e.startTime, e.stopTime FROM ' .
+            Model::nsModel('Event') . ' AS e LEFT JOIN ' . Model::nsModel('Church') .
+            ' AS c LEFT JOIN ' . Model::nsModel('ChurchProp') . ' AS n ON ' .
+            '(c.id = n.churchId AND n.churchAttrId = :nickname: AND n.multi = 1)';
+        $bind = ['nickname' => $this->lookup->getId('ChurchAttr', 'nickname')];
+        $separator = ' WHERE ';
 
         foreach ($exactOptions as $option) {
             if (isset($options[$option])) {
-                $separator = ($conditions) ? ' and ' : '';
+                $phql .= "$separator$option ";
+                $separator = ' AND ';
+
                 if (is_array($options[$option])) {
                     $i = 0;
-                    $bindIn = [];
-                    
-                    foreach ($options[$option] as $o) {
+                    $placeholders = [];
+                    foreach ($options[$option] as $key => $value) {
                         $i++;
-                        $bindIn["$option$i"] = $o;
-                        $bind["options$i"] = $o;
+                        $placeholders[] = ":$option$i:";
+                        $bind["$option$i"] = $value;
                     }
-
-                    $conditions .= "$separator$option in ({Query::in($bindIn)})";
+                    $phql .= 'in (' . implode(', ', $placeholders) . ')';
                 } else {
-                    $conditions .= "$separator$option = :$option:";
+                    $phql .= "= :$option:";
                     $bind[$option] = $options[$option];
                 }
             }
         }
+
+        foreach ($rangeOptions as $option) {
+            if (isset($options[$option])) {
+                $ucfo = ucfirst($option);
+                $startStop = [
+                    "start$ucfo" => '<=',
+                    "stop$ucfo" => '>='
+                ];
+                foreach ($startStop as $field => $operator) {
+                    $phql .= "$separator$field $operator :$field:";
+                    $bind[$field] = $options[$option];
+                    $separator = ' AND ';
+                }
+            }
+        }
+
+        $phql .= ' ORDER BY e.startTime, e.stopTime';
+        return Model::query($phql, $bind);
     }
 
     protected function today(array $options = array(), $addTime = false)
     {
         $options['date'] = $this->temporal->toDateString();
         $options['month'] = $this->temporal->month;
-        $options['week'] = $this->temporal->monthWeek;
-        $options['day'] = $this->temporal->weekDay;
+        $options['week'] = $this->temporal->getMonthWeek();
+        $options['day'] = $this->temporal->getWeekDay();
         
         if ($addTime) {
             $options['time'] = $this->temporal->toTimeString();
@@ -80,20 +88,22 @@ class Event
     {
         $typeIds = [];
         $types = (is_array($type)) ? $type : [$type];
+        $typeCount = 0;
 
         foreach ($types as $t) {
             if ($t) {
-                $id = $this->lookup->getId($t);
+                $id = $this->lookup->getId('EventType', $t);
                 if ($id) {
-                    $typeIds = $id;
+                    $typeIds[] = $id;
+                    $typeCount++;
                 }
             }
         }
 
-        if (count($typeIds) == 1) {
-            $typeIds = $typeIds[0];
+        if ($typeCount <= 1) {
+            $typeIds = ($typeCount) ? $typeIds[0] : null;
         }
         
-        return ['name' => $name, 'type' => ($typeIds) ? $typeIds : null ];
+        return ['event' => $name, 'eventTypeId' => $typeIds];
     }
 }

@@ -2,131 +2,123 @@
 
 namespace Brianwalden\SAS\Library;
 
-use Brianwalden\SAS\Models\BaseModel;
+use Phalcon\DI;
 
 class Lookup
 {
-    protected $month;
+    protected $lookups;
 
-    protected $week;
+    protected $modelShared;
 
-    protected $day;
-
-    protected $eventType;
+    /**************************************************************************
+     * Instance methods *******************************************************
+     **************************************************************************/
     
-    /**
-     * get the id for a given value
-     *
-     * @param string $property    the array you want to lookup
-     * @param string $value    the value you want to search for
-     *
-     * @return mixed    (int) the id if found, else (bool) false
-     */
-    public function getId($property, $value)
+    public function __construct()
+    {
+        $this->lookups = [];
+        $this->modelShared = Model::getShared();
+    }
+
+    public function getId($model, $value)
     {
         $result = false;
 
-        if (is_numeric($value)) {
-            $result = $this->getValue($property, $value);
+        if (static::isIntLike($value)) {
+            $result = $this->getValue($model, $value);
         } else {
-            $lookup = $this->getLookup($property, true);
-            $formatted = $this->formatValue($value);
-
-            if ($lookup && isset($lookup[$formatted])) {
-                $result = $lookup[$formatted];
+            $lookup = $this->getLookup($model);
+            $testValue = trim(strtolower($value));
+            
+            if ($lookup && $testValue) {
+                foreach ($lookup as $id => $lookupValue) {
+                    if ($testValue == trim(strtolower($lookupValue))) {
+                        $result = $id;
+                        break;
+                    }
+                }
             }
         }
 
-        return ($result && !is_numeric($result)) ?
-            $this->getId($property, $result) : $result;
+        return ($result && !static::isIntLike($result)) ?
+            $this->getId($model, $result) : $result;
     }
 
-    /**
-     * get the value for a given id
-     *
-     * @param string $property    the array you want to lookup
-     * @param integer $id    the id you want to search for
-     *
-     * @return mixed    (string) the value if found, else (bool) false
-     */
-    public function getValue($property, $id)
+    public function getValue($model, $id)
     {
         $result = false;
 
-        if (is_numeric($id)) {
-            $lookup = $this->getLookup($property);
+        if (static::isIntLike($id)) {
+            $lookup = $this->getLookup($model);
 
             if ($lookup && isset($lookup[$id])) {
                 $result = $lookup[$id];
             }
         } else {
-            $result = $this->getId($property, $id);
+            $result = $this->getId($model, $id);
         }
 
-        return ($result && is_numeric($result)) ?
-            $this->getValue($property, $result) : $result;
+        return ($result && static::isIntLike($result)) ?
+            $this->getValue($model, $result) : $result;
     }
 
-    /**
-     * is $property one of the arrays defined above
-     *
-     * @param string $property    the array you want to check
-     *
-     * @return boolean     is $property defined above
-     */
-    public function isLookup($property)
-    {
-        return property_exists($this, $property);
-    }
-
-    /**
-     * return one of the static arrays defined above
-     *
-     * @param string $property    the array you want to get
-     * @param boolean $flip    perform array_flip() on the result; default: false
-     *
-     * @return mixed    (array) the array if found, else (bool) false
-     */
-    public function getLookup($property, $flip = false)
+    public function getLookup($model, $flip = false)
     {
         $result = false;
 
-        if ($this->isLookup($property)) {
-            if (!isset($this->$property)) {
-                $this->$property = [];
-                $rows = call_user_func(
-                    ['\\' . BaseModel::BASE_NS . ucfirst($property), 'find'],
-                    ['order' => 'id']
-                );
+        if ($this->isLookup($model)) {
+            if (!isset($this->lookups[$this->modelShared->model])) {
+                $this->lookups[$this->modelShared->model] = [];
+                $field = $this->modelShared->lookupField;
 
-                foreach ($rows as $row) {
-                    $this->$property[$row->id] = $row->$property;
+                foreach ($this->modelShared->find(['order' => 'id']) as $row) {
+                    $this->lookups[$this->modelShared->model][$row->id] = $row->$field;
                 }
             }
 
-            $result = ($flip) ? array_flip($this->$property) : $this->$property;
+            $result = $this->lookups[$model];
         }
 
-        return $result;
+        return ($result && $flip) ? array_flip($result) : $result;
     }
 
-    /**
-     * format a value for searching for it in $property
-     *
-     * @param string $property    the array you'll be looking up
-     * @param string $value    the value you want to format
-     *
-     * @return string    the formatted value
-     */
-    protected function formatValue($property, $value)
+    public function isLookup($model)
     {
-        $formatted = strtolower($value);
-        $doUc1 = [
-            'week' => true,
-            'day' => true,
-            'eventType' => ($formatted == 'eucharist'),
-        ];
+        $this->modelShared->set($model);
+        return (bool) $this->modelShared->lookupField;
+    }
 
-        return (empty($doUc1[$property])) ? $formatted : ucfirst($formatted);
+    /**************************************************************************
+     * Static methods *********************************************************
+     **************************************************************************/
+
+    public static function getShared()
+    {
+        return DI::getDefault()->getLookup();
+    }
+
+    public static function id($model, $value)
+    {
+        return static::getShared()->getId($model, $value);
+    }
+
+    public static function value($model, $id)
+    {
+        return static::getShared()->getValue($model, $id);
+    }
+
+    public static function get($model, $flip = false)
+    {
+        return static::getShared()->getLookup($model, $flip);
+    }
+
+    public static function is($model)
+    {
+        return static::getShared()->isLookup($model);
+    }
+
+    public static function isIntLike($value)
+    {
+        return (is_numeric($value) && $value == (int) $value);
     }
 }
