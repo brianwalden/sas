@@ -1,6 +1,6 @@
 {# index/index.volt #}
 
-<h1 class="h3">Today's Confession Times for Albany County</h1>
+<h1 class="h3">Albany Confession Times <small>{{ temporal.toHumanDate() }}</small></h1>
 
 <div id="timeline"><div>
 
@@ -18,11 +18,11 @@
             {% set start = temporal.getNew(c.startTime) %}
             {% set stop = temporal.getNew(c.stopTime) %}
             [
-                '{{c.nickname|escape_js}}',
-                '{{start.toHumanTime()}} - {{stop.toHumanTime()}}',
-                new Date(0, 0, 0, {{start.hour}}, {{start.minute}}, 0),
-                new Date(0, 0, 0, {{stop.hour}}, {{stop.minute}}, 0),
-            ]
+                '{{ c.nickname|escape_js }}',
+                '{{ start.toHumanTime() }} - {{ stop.toHumanTime() }}',
+                new Date(0, 0, 0, {{ start.hour }}, {{ start.minute }}, 0),
+                new Date(0, 0, 0, {{ stop.hour }}, {{ stop.minute }}, 0),
+            ],
         {% endfor %}
         ],
     };

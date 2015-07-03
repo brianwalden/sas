@@ -30,7 +30,7 @@ class Lookup
             $lookup = $this->getLookup($model);
             $testValue = trim(strtolower($value));
             
-            if ($lookup && $testValue) {
+            if ($lookup) {
                 foreach ($lookup as $id => $lookupValue) {
                     if ($testValue == trim(strtolower($lookupValue))) {
                         $result = $id;

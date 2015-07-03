@@ -104,6 +104,13 @@ class Event
             $typeIds = ($typeCount) ? $typeIds[0] : null;
         }
         
-        return ['event' => $name, 'eventTypeId' => $typeIds];
+        return [
+            'event' => $name,
+            'eventTypeId' => $typeIds,
+            'eventFilterId' => [
+                $this->lookup->getId('EventFilter', ""),
+                $this->lookup->getId('EventFilter', "not holy day or vigil"),
+            ],
+        ];
     }
 }

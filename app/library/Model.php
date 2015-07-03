@@ -66,16 +66,15 @@ class Model
         return (empty($results['lookupField'])) ? false : $results['lookupField'];
     }
 
-    public static function fieldIn($field, array $values = array(), $notIn = false)
+    public static function in(array $values = array())
     {
-        $placeholders = [];
-        $in = ($notIn) ? "NOT IN" : "IN";
+        $in = [];
 
         foreach ($values as $key => $value) {
-            $placehoders[] = (Lookup::isIntLike($key)) ? "?$key" : ":$key:";
+            $in[] = (Lookup::isIntLike($key)) ? "?$key" : ":$key:";
         }
 
-        return "$field $in (" . implode(', ', $placeholders) . ')';
+        return '(' . implode(', ', $in) . ')';
     }
 
     public static function modelNames($model)

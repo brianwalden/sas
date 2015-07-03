@@ -46,18 +46,15 @@ class Temporal extends Carbon
         return $this->lookupValue('Month', $this->month);
     }
 
+    public function toHumanDate($includeDayOfWeek = false)
+    {
+        $includeDayOfWeek = ($includeDayOfWeek) ? 'l, ': '';
+        return $this->format($includeDayOfWeek . 'F jS, Y');
+    }
+
     public function toHumanTime()
     {
-        $hour = $this->hour;
-        $minute = str_pad($this->minute, 2, "0", STR_PAD_LEFT);
-        $ampm = "am";
-
-        if ($hour > 12) {
-            $hour -= 12;
-            $ampm = "pm";
-        }
-
-        return "$hour:$minute$ampm";
+        return $this->format('gi:a');
     }
 
     protected function lookupValue($model, $value)
