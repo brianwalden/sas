@@ -117,7 +117,7 @@ CREATE TABLE `church` (
   CONSTRAINT `church_ibfk_1` FOREIGN KEY (`parishId`) REFERENCES `parish` (`id`),
   CONSTRAINT `church_ibfk_2` FOREIGN KEY (`religiousId`) REFERENCES `religious` (`id`),
   CONSTRAINT `church_ibfk_3` FOREIGN KEY (`cityId`) REFERENCES `city` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -126,7 +126,7 @@ CREATE TABLE `church` (
 
 LOCK TABLES `church` WRITE;
 /*!40000 ALTER TABLE `church` DISABLE KEYS */;
-INSERT INTO `church` VALUES (1,'Cathedral of the Immaculate Conception',25,1,1);
+INSERT INTO `church` VALUES (2,'All Saints Catholic Church',26,1,1),(1,'Cathedral of the Immaculate Conception',25,1,1),(16,'Christ Our Light Catholic Church',37,1,1),(5,'Christ the King Roman Catholic Church',28,1,1),(15,'Church of St. Clare',36,1,1),(12,'Church of St. Vincent de Paul',34,1,1),(3,'Church of the Blessed Sacrament',27,1,1),(13,'Grotto of Our Lady of Lourdes',34,1,1),(11,'Historic St. Mary\'s Church on Capitol Hill',33,1,1),(14,'Korean Catholic Apostolate',35,1,1),(6,'Parish of Mater Christi',29,1,1),(7,'Sacred Heart of Jesus Church',30,1,1),(4,'Shrine Church of Our Lady of the Americas',27,1,1),(18,'St. Francis Chapel',1,25,1),(9,'St. Francis of Assisi Parish, Delaware Ave. Community',32,1,1),(10,'St. Francis of Assisi Parish, South End Community',32,1,1),(17,'St. Pius X Catholic Church',38,1,1),(8,'Vietnamese Catholic Apostolate',31,1,1);
 /*!40000 ALTER TABLE `church` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,7 +143,7 @@ CREATE TABLE `churchAttr` (
   `multiLimit` int(10) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `attr` (`attr`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,7 +152,7 @@ CREATE TABLE `churchAttr` (
 
 LOCK TABLES `churchAttr` WRITE;
 /*!40000 ALTER TABLE `churchAttr` DISABLE KEYS */;
-INSERT INTO `churchAttr` VALUES (1,'parish',1),(2,'cathedral',1),(3,'basilica',1),(4,'shrine',1),(5,'mission',1),(6,'dioceseId',1),(7,'streetNote',1),(8,'street',3),(9,'zip',1),(10,'site',1);
+INSERT INTO `churchAttr` VALUES (1,'parish',1),(2,'cathedral',1),(3,'basilica',1),(4,'shrine',1),(5,'mission',1),(6,'dioceseId',1),(7,'streetNote',1),(8,'street',3),(9,'zip',1),(10,'site',1),(11,'nickname',1);
 /*!40000 ALTER TABLE `churchAttr` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -175,7 +175,7 @@ CREATE TABLE `churchProp` (
   KEY `churchAttrId_2` (`churchAttrId`,`value`),
   CONSTRAINT `churchProp_ibfk_1` FOREIGN KEY (`churchId`) REFERENCES `church` (`id`),
   CONSTRAINT `churchProp_ibfk_2` FOREIGN KEY (`churchAttrId`) REFERENCES `churchAttr` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +184,7 @@ CREATE TABLE `churchProp` (
 
 LOCK TABLES `churchProp` WRITE;
 /*!40000 ALTER TABLE `churchProp` DISABLE KEYS */;
-INSERT INTO `churchProp` VALUES (1,1,1,1,'parish'),(2,1,2,1,'cathedral'),(3,1,8,1,'125 Eagle Street'),(4,1,9,1,'12202'),(5,1,10,1,'http://cathedralic.com/');
+INSERT INTO `churchProp` VALUES (1,1,1,1,'parish'),(2,1,2,1,'cathedral'),(3,1,8,1,'125 Eagle Street'),(4,1,9,1,'12202'),(5,1,10,1,'http://cathedralic.com/'),(6,1,11,1,'Immaculate Conception'),(7,2,1,1,'parish'),(8,2,8,1,'16 Homestead Street'),(9,2,9,1,'12203'),(10,2,10,1,'http://rcda.org/churches/AllSaints/'),(11,2,11,1,'All Saints'),(12,3,1,1,'parish'),(13,3,8,1,'607 Central Avenue'),(14,3,9,1,'12206'),(15,3,10,1,'http://blessedsacramentalbany.org/'),(16,3,11,1,'Blessed Sacrament'),(17,4,4,1,'diocesean'),(18,4,8,1,'273 Central Avenue'),(19,4,9,1,'12206'),(20,4,10,1,'http://ourladyoftheamericas.weebly.com/'),(21,4,11,1,'Our Lady of the Americas'),(22,4,5,1,'1'),(23,5,1,1,'parish'),(24,5,8,1,'20 Sumter Avenue'),(25,5,9,1,'12203'),(26,5,10,1,'http://www.ctkparishny.org/'),(27,5,11,1,'Christ the King'),(28,6,1,1,'parish'),(29,6,8,1,'40 Hopewell Street'),(30,6,9,1,'12208'),(31,6,10,1,'http://rcda.org/churches/MaterChristi/'),(32,6,11,1,'Mater Christi'),(33,7,1,1,'parish'),(34,7,8,1,'33 Walter Street'),(35,7,9,1,'12204'),(36,7,10,1,'http://rcda.org/churches/sacredheartofjesus/'),(37,7,11,1,'Sacred Heart'),(38,8,1,1,'parish'),(39,8,8,1,'33 Walter Street'),(40,8,9,1,'12204'),(41,8,10,1,'http://www.vietnamesecatholiccommunityalbany.org/'),(42,8,11,1,'Vietnamese Apostolate'),(43,9,1,1,'parish'),(44,9,8,1,'391 Delaware Avenue'),(45,9,9,1,'12209'),(46,9,10,1,'http://rcda.org/churches/stfrancisofassisi/'),(47,9,11,1,'St. Francis Delaware Ave.'),(48,10,1,1,'co-parish'),(49,10,8,1,'88 Fourth Avenue'),(50,10,9,1,'12202'),(51,10,10,1,'http://rcda.org/churches/stfrancisofassisi/'),(52,10,11,1,'St. Francis South End'),(53,11,1,1,'parish'),(54,11,8,1,'10 Lodge Street'),(55,11,9,1,'12207'),(56,11,10,1,'http://www.hist-stmarys.org/'),(57,11,11,1,'St. Mary'),(58,12,1,1,'parish'),(59,12,8,1,'900 Madison Avenue'),(60,12,9,1,'12208'),(61,12,10,1,'http://www.stvincentalbany.org/'),(62,12,11,1,'St. Vincent'),(63,13,8,1,'481 Yates Street'),(64,13,9,1,'12208'),(65,13,10,1,'http://www.stvincentalbany.org/'),(66,13,11,1,'Our Lady of Lourdes'),(67,14,1,1,'parish'),(68,14,8,1,'17 Exchange Street'),(69,14,9,1,'12205'),(70,14,10,1,'http://www.kccalbany.org/xe/home/'),(71,14,11,1,'Vietnamese Apostolate'),(72,15,1,1,'parish'),(73,15,8,1,'1947 Central Avenue'),(74,15,9,1,'12205'),(75,15,10,1,'http://stclares.nycap.rr.com/'),(76,15,11,1,'St. Clare'),(77,16,1,1,'parish'),(78,16,8,1,'1 Maria Drive'),(79,16,9,1,'12211'),(80,16,10,1,'http://www.christourlightchurch.org/'),(81,16,11,1,'Christ Our Light'),(82,17,1,1,'parish'),(83,17,8,1,'23 Crumitie Road'),(84,17,9,1,'12211'),(85,17,10,1,'http://www.stpiusxloudonville.org/'),(86,17,11,1,'St. Pius X'),(87,18,6,1,'67'),(88,18,8,1,'145 Wolf Road'),(89,18,9,1,'12205'),(90,18,10,1,'https://sites.google.com/site/stfrancischapel/'),(91,18,11,1,'St. Francis');
 /*!40000 ALTER TABLE `churchProp` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -735,7 +735,7 @@ CREATE TABLE `event` (
   CONSTRAINT `event_ibfk_7` FOREIGN KEY (`startDay`) REFERENCES `day` (`id`),
   CONSTRAINT `event_ibfk_8` FOREIGN KEY (`stopDay`) REFERENCES `day` (`id`),
   CONSTRAINT `event_ibfk_9` FOREIGN KEY (`eventFilterId`) REFERENCES `eventFilter` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -744,7 +744,7 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES (1,'',1,1,1,'2000-01-01','3000-01-01',1,12,1,5,2,6,'11:30:00','12:00:00'),(2,'',1,1,1,'2000-01-01','3000-01-01',1,12,1,5,7,7,'16:00:00','17:00:00');
+INSERT INTO `event` VALUES (1,'',1,1,1,'2000-01-01','3000-01-01',1,12,1,5,2,6,'11:30:00','12:00:00'),(2,'',1,1,1,'2000-01-01','3000-01-01',1,12,1,5,7,7,'16:00:00','17:00:00'),(3,'',1,1,2,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:30:00'),(4,'',1,1,3,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:30:00'),(5,'',1,1,5,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:30:00'),(8,'',1,1,8,'2000-01-01','3000-01-01',1,12,1,1,1,1,'10:15:00','10:30:00'),(9,'',1,1,8,'2000-01-01','3000-01-01',1,12,1,1,1,1,'11:30:00','11:45:00'),(10,'',1,1,9,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:45:00'),(13,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,1,1,'06:45:00','07:00:00'),(14,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,1,1,'08:15:00','08:30:00'),(15,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,1,1,'09:45:00','10:00:00'),(16,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,1,1,'11:15:00','11:30:00'),(12,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,7,7,'11:50:00','12:05:00'),(11,'',1,1,11,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','16:00:00'),(17,'',1,1,12,'2000-01-01','3000-01-01',1,12,1,5,7,7,'16:45:00','17:00:00'),(18,'',1,1,15,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:30:00'),(19,'',1,1,16,'2000-01-01','3000-01-01',1,12,1,5,7,7,'17:00:00','17:15:00'),(20,'',1,1,17,'2000-01-01','3000-01-01',1,12,1,5,7,7,'16:15:00','16:45:00'),(25,'',1,3,18,'2000-01-01','3000-01-01',1,12,1,5,1,7,'10:30:00','12:00:00'),(26,'',1,3,18,'2000-01-01','3000-01-01',1,12,1,5,1,7,'12:40:00','15:45:00'),(6,'',1,5,6,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:45:00'),(7,'',1,6,6,'2000-01-01','3000-01-01',1,12,1,5,7,7,'15:00:00','15:45:00'),(21,'',1,7,18,'2000-01-01','3000-01-01',1,12,1,5,2,6,'10:30:00','12:00:00'),(22,'',1,7,18,'2000-01-01','3000-01-01',1,12,1,5,2,6,'12:40:00','17:30:00'),(23,'',1,7,18,'2000-01-01','3000-01-01',1,12,1,5,7,7,'10:30:00','12:00:00'),(24,'',1,7,18,'2000-01-01','3000-01-01',1,12,1,5,7,7,'12:40:00','15:45:00');
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -761,7 +761,7 @@ CREATE TABLE `eventAttr` (
   `multiLimit` int(10) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `attr` (`attr`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -770,7 +770,7 @@ CREATE TABLE `eventAttr` (
 
 LOCK TABLES `eventAttr` WRITE;
 /*!40000 ALTER TABLE `eventAttr` DISABLE KEYS */;
-INSERT INTO `eventAttr` VALUES (1,'page',1);
+INSERT INTO `eventAttr` VALUES (1,'page',1),(2,'note',1);
 /*!40000 ALTER TABLE `eventAttr` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -786,7 +786,7 @@ CREATE TABLE `eventFilter` (
   `eventFilter` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `eventFilter` (`eventFilter`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -795,7 +795,7 @@ CREATE TABLE `eventFilter` (
 
 LOCK TABLES `eventFilter` WRITE;
 /*!40000 ALTER TABLE `eventFilter` DISABLE KEYS */;
-INSERT INTO `eventFilter` VALUES (1,''),(4,'holiday'),(2,'holy day'),(3,'holy day vigil');
+INSERT INTO `eventFilter` VALUES (1,''),(5,'Advent'),(4,'holiday'),(2,'holy day'),(3,'holy day vigil'),(6,'Lent'),(7,'not holy day or vigil');
 /*!40000 ALTER TABLE `eventFilter` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -874,7 +874,7 @@ CREATE TABLE `eventProp` (
   KEY `eventAttrId_2` (`eventAttrId`,`value`),
   CONSTRAINT `eventProp_ibfk_1` FOREIGN KEY (`eventId`) REFERENCES `event` (`id`),
   CONSTRAINT `eventProp_ibfk_2` FOREIGN KEY (`eventAttrId`) REFERENCES `eventAttr` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -883,7 +883,7 @@ CREATE TABLE `eventProp` (
 
 LOCK TABLES `eventProp` WRITE;
 /*!40000 ALTER TABLE `eventProp` DISABLE KEYS */;
-INSERT INTO `eventProp` VALUES (1,1,1,1,'http://cathedralic.com/sacraments.htm'),(2,2,1,1,'http://cathedralic.com/sacraments.htm');
+INSERT INTO `eventProp` VALUES (1,1,1,1,'http://cathedralic.com/sacraments.htm'),(2,2,1,1,'http://cathedralic.com/sacraments.htm'),(3,4,1,1,'http://blessedsacramentalbany.org/reconcilliation/'),(4,5,1,1,'http://www.ctkparishny.org/parish-life/mass-schedule-bulletins/'),(5,6,1,1,'http://rcda.org/churches/MaterChristi/sacraments.html'),(6,7,1,1,'http://rcda.org/churches/MaterChristi/sacraments.html'),(7,8,1,1,'http://www.vietnamesecatholiccommunityalbany.org/'),(8,8,2,1,'before Mass'),(9,9,1,1,'http://www.vietnamesecatholiccommunityalbany.org/'),(10,9,2,1,'after Mass'),(11,10,1,1,'http://rcda.org/churches/stfrancisofassisi/Sacraments.html'),(12,11,1,1,'http://www.hist-stmarys.org/'),(13,12,1,1,'http://www.hist-stmarys.org/'),(14,12,2,1,'before Mass'),(15,13,1,1,'http://www.hist-stmarys.org/'),(16,13,2,1,'before Mass'),(17,14,1,1,'http://www.hist-stmarys.org/'),(18,14,2,1,'before Mass'),(19,15,1,1,'http://www.hist-stmarys.org/'),(20,15,2,1,'before Mass'),(21,16,1,1,'http://www.hist-stmarys.org/'),(22,16,2,1,'before Mass'),(23,17,1,1,'http://www.stvincentalbany.org/sacraments-rites/reconciliation/'),(24,18,1,1,'http://stclares.nycap.rr.com/cal.html'),(25,19,1,1,'http://www.christourlightchurch.org/Sacraments'),(26,19,2,1,'after Mass'),(27,20,1,1,'http://www.stpiusxloudonville.org/'),(28,21,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf'),(29,22,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf'),(30,23,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf'),(31,24,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf'),(32,25,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf'),(33,26,1,1,'http://scribe.apollohosting.com/httpdocs/sfchapel/bul_covr.pdf');
 /*!40000 ALTER TABLE `eventProp` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -908,7 +908,7 @@ CREATE TABLE `eventType` (
 
 LOCK TABLES `eventType` WRITE;
 /*!40000 ALTER TABLE `eventType` DISABLE KEYS */;
-INSERT INTO `eventType` VALUES (1,'confession'),(2,'mass');
+INSERT INTO `eventType` VALUES (1,'confession'),(2,'Eucharist');
 /*!40000 ALTER TABLE `eventType` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1065,7 +1065,7 @@ CREATE TABLE `parish` (
   UNIQUE KEY `parish` (`parish`,`identifier`,`dioceseId`),
   KEY `dioceseId` (`dioceseId`),
   CONSTRAINT `parish_ibfk_1` FOREIGN KEY (`dioceseId`) REFERENCES `diocese` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1074,7 +1074,7 @@ CREATE TABLE `parish` (
 
 LOCK TABLES `parish` WRITE;
 /*!40000 ALTER TABLE `parish` DISABLE KEYS */;
-INSERT INTO `parish` VALUES (1,NULL,'',1),(2,NULL,'',2),(3,NULL,'',3),(4,NULL,'',4),(5,NULL,'',5),(6,NULL,'',6),(7,NULL,'',7),(8,NULL,'',8),(9,NULL,'',9),(10,NULL,'',10),(11,NULL,'',11),(12,NULL,'',12),(13,NULL,'',13),(14,NULL,'',14),(15,NULL,'',15),(16,NULL,'',16),(17,NULL,'',17),(18,NULL,'',18),(19,NULL,'',19),(20,NULL,'',20),(21,NULL,'',21),(22,NULL,'',22),(23,NULL,'',23),(24,NULL,'',24),(25,'Immaculate Conception','',67);
+INSERT INTO `parish` VALUES (1,NULL,'',1),(2,NULL,'',2),(3,NULL,'',3),(4,NULL,'',4),(5,NULL,'',5),(6,NULL,'',6),(7,NULL,'',7),(8,NULL,'',8),(9,NULL,'',9),(10,NULL,'',10),(11,NULL,'',11),(12,NULL,'',12),(13,NULL,'',13),(14,NULL,'',14),(15,NULL,'',15),(16,NULL,'',16),(17,NULL,'',17),(18,NULL,'',18),(19,NULL,'',19),(20,NULL,'',20),(21,NULL,'',21),(22,NULL,'',22),(23,NULL,'',23),(24,NULL,'',24),(26,'All Saints','',67),(27,'Blessed Sacrament','',67),(37,'Christ Our Light','',67),(28,'Christ the King','',67),(25,'Immaculate Conception','',67),(35,'Korean Apostolate','',67),(29,'Mater Christi','',67),(30,'Sacred Heart of Jesus','',67),(36,'St. Clare','',67),(32,'St. Francis of Assisi','',67),(33,'St. Mary','',67),(38,'St. Pius X','',67),(34,'St. Vincent de Paul','',67),(31,'Vietnamese Apostolate','',67);
 /*!40000 ALTER TABLE `parish` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1123,7 +1123,7 @@ CREATE TABLE `parishProp` (
   KEY `parishAttrId_2` (`parishAttrId`,`value`),
   CONSTRAINT `parishProp_ibfk_1` FOREIGN KEY (`parishId`) REFERENCES `parish` (`id`),
   CONSTRAINT `parishProp_ibfk_2` FOREIGN KEY (`parishAttrId`) REFERENCES `parishAttr` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1132,6 +1132,7 @@ CREATE TABLE `parishProp` (
 
 LOCK TABLES `parishProp` WRITE;
 /*!40000 ALTER TABLE `parishProp` DISABLE KEYS */;
+INSERT INTO `parishProp` VALUES (1,31,1,1,'Vietnamese'),(2,35,1,1,'Korean');
 /*!40000 ALTER TABLE `parishProp` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1234,7 +1235,7 @@ CREATE TABLE `religious` (
   UNIQUE KEY `religious` (`religious`,`religious1Id`),
   KEY `religious1Id` (`religious1Id`),
   CONSTRAINT `religious_ibfk_1` FOREIGN KEY (`religious1Id`) REFERENCES `religious1` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1243,7 +1244,7 @@ CREATE TABLE `religious` (
 
 LOCK TABLES `religious` WRITE;
 /*!40000 ALTER TABLE `religious` DISABLE KEYS */;
-INSERT INTO `religious` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24);
+INSERT INTO `religious` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24),(25,'St. Bernardine of Siena Friary',25);
 /*!40000 ALTER TABLE `religious` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1262,7 +1263,7 @@ CREATE TABLE `religious1` (
   UNIQUE KEY `religious1` (`religious1`,`religious2Id`),
   KEY `religious2Id` (`religious2Id`),
   CONSTRAINT `religious1_ibfk_1` FOREIGN KEY (`religious2Id`) REFERENCES `religious2` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1271,7 +1272,7 @@ CREATE TABLE `religious1` (
 
 LOCK TABLES `religious1` WRITE;
 /*!40000 ALTER TABLE `religious1` DISABLE KEYS */;
-INSERT INTO `religious1` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24);
+INSERT INTO `religious1` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24),(25,NULL,25);
 /*!40000 ALTER TABLE `religious1` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1346,7 +1347,7 @@ CREATE TABLE `religious2` (
   UNIQUE KEY `religious2` (`religious2`,`religious3Id`),
   KEY `religious3Id` (`religious3Id`),
   CONSTRAINT `religious2_ibfk_1` FOREIGN KEY (`religious3Id`) REFERENCES `religious3` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1355,7 +1356,7 @@ CREATE TABLE `religious2` (
 
 LOCK TABLES `religious2` WRITE;
 /*!40000 ALTER TABLE `religious2` DISABLE KEYS */;
-INSERT INTO `religious2` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24);
+INSERT INTO `religious2` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24),(25,'Holy Name Province',25);
 /*!40000 ALTER TABLE `religious2` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1430,7 +1431,7 @@ CREATE TABLE `religious3` (
   UNIQUE KEY `religious3` (`religious3`,`religiousTopId`),
   KEY `religiousTopId` (`religiousTopId`),
   CONSTRAINT `religious3_ibfk_1` FOREIGN KEY (`religiousTopId`) REFERENCES `religiousTop` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1439,7 +1440,7 @@ CREATE TABLE `religious3` (
 
 LOCK TABLES `religious3` WRITE;
 /*!40000 ALTER TABLE `religious3` DISABLE KEYS */;
-INSERT INTO `religious3` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24);
+INSERT INTO `religious3` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24),(25,'Order of Friars Minor',25);
 /*!40000 ALTER TABLE `religious3` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1570,7 +1571,7 @@ CREATE TABLE `religiousTop` (
   UNIQUE KEY `religiousTop` (`religiousTop`,`suiIurisId`),
   KEY `suiIurisId` (`suiIurisId`),
   CONSTRAINT `religiousTop_ibfk_1` FOREIGN KEY (`suiIurisId`) REFERENCES `suiIuris` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1579,7 +1580,7 @@ CREATE TABLE `religiousTop` (
 
 LOCK TABLES `religiousTop` WRITE;
 /*!40000 ALTER TABLE `religiousTop` DISABLE KEYS */;
-INSERT INTO `religiousTop` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24);
+INSERT INTO `religiousTop` VALUES (1,NULL,1),(2,NULL,2),(3,NULL,3),(4,NULL,4),(5,NULL,5),(6,NULL,6),(7,NULL,7),(8,NULL,8),(9,NULL,9),(10,NULL,10),(11,NULL,11),(12,NULL,12),(13,NULL,13),(14,NULL,14),(15,NULL,15),(16,NULL,16),(17,NULL,17),(18,NULL,18),(19,NULL,19),(20,NULL,20),(21,NULL,21),(22,NULL,22),(23,NULL,23),(24,NULL,24),(25,'Franciscan Orders',1);
 /*!40000 ALTER TABLE `religiousTop` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2069,4 +2070,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-25 10:59:50
+-- Dump completed on 2015-07-03  2:50:32
