@@ -11,15 +11,19 @@ abstract class BaseController extends Controller
     const LAYOUT = 'base';
 
     protected static $defaultAssets = [
-        'addCss' => [
-            '//fonts.googleapis.com/css?family=Montserrat' => false,
-            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' => false,
-            'css/style.css' => true,
+        'headerCss' => [
+            'addCss' => [
+                '//fonts.googleapis.com/css?family=Montserrat' => false,
+                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' => false,
+                'css/style.css' => true,
+            ],
         ],
-        'addJs' => [
-            '//code.jquery.com/jquery-2.1.4.min.js' => false,
-            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js' => false,
-            'js/script.js' => true,
+        'headerJs' => ['addJs' => [ '//code.jquery.com/jquery-2.1.4.min.js' => false ]],
+        'footerJs' => [
+            'addJs' => [
+                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js' => false,
+                'js/script.js' => true,
+            ],
         ],
     ];
 
@@ -79,16 +83,20 @@ abstract class BaseController extends Controller
      */
     protected function addAssets(array $assets = array())
     {
-        $validMethods = array_keys(static::$defaultAssets);
+        $validCollections = array_keys(static::$defaultAssets);
 
         if (!$assets) {
             $assets = static::$defaultAssets;
         }
 
-        foreach ($assets as $method => $resources) {
-            if (in_array($method, $validMethods)) {
-                foreach ($resources as $resource => $isLocal) {
-                    $this->assets->$method($resource, $isLocal);
+        foreach ($assets as $collection => $asset) {
+            if (array_key_exists($collection, static::$defaultAssets)) {
+                foreach ($asset as $method => $resources) {
+                    if (array_key_exists($method, static::$defaultAssets[$collection])) {
+                        foreach ($resources as $resource => $isLocal) {
+                            $this->assets->collection($collection)->$method($resource, $isLocal);
+                        }
+                    }
                 }
             }
         }

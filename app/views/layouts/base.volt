@@ -7,7 +7,8 @@
 
         {{ get_title() }}
 
-        {{ assets.outputCss() }}
+        {{ assets.outputCss('headerCss') }}
+        {{ assets.outputJs('headerJs') }}
     </head>
     <body>
         <nav class="navbar navbar-bw">
@@ -46,6 +47,6 @@
             </div>
         <div>
 
-        {{ assets.outputJs() }}
+        {{ assets.outputJs('footerJs') }}
     </body>
 </html>
