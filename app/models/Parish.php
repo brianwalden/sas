@@ -14,7 +14,7 @@ class Parish extends BaseModel
 
     public function initialize()
     {
-        $this->relationship('belongsTo', 'Province', 'provinceId', false);
+        $this->relationship('belongsTo', 'Diocese', 'dioceseId', false);
         $this->relationship('hasMany', 'Church', 'parishId', false);
         $this->relationship('hasMany', 'ParishProp', 'parishId', false);
     }

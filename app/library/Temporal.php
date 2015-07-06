@@ -52,9 +52,45 @@ class Temporal extends Carbon
         return $this->format($includeDayOfWeek . 'F jS, Y');
     }
 
-    public function toHumanTime()
+    public function toHumanTime($includeAmPm = false)
     {
-        return $this->format('gi:a');
+        $includeAmPm = ($includeAmPm) ? 'a' : '';
+        return $this->format("g:i$includeAmPm");
+    }
+
+    public function getDateProperties()
+    {
+        return (object) [
+            'date' => $this->toDateString(),
+            'dateHuman' => $this->toHumanDate(),
+            'dateHumanLong' => $this->toHumanDate(true),
+            'year' => $this->year,
+            'month' => $this->month,
+            'monthJs' => $this->month - 1,
+            'monthHuman' => $this->toMonthString(),
+            'day' => $this->day,
+            'dayHuman' => $this->format('jS'),
+            'weekOfMonth' => $this->getMonthWeek(),
+            'weekOfMonthHuman' => $this->toMonthWeekString(),
+            'dayOfWeek' => $this->getWeekDay(),
+            'dayOfWeekHuman' => $this->toWeekDayString(),
+        ];
+    }
+
+    public function getTimeProperties()
+    {
+        return (object) [
+            'time' => $this->toTimeString(),
+            'timeHuman' => $this->toHumanTime(),
+            'timeHumanLong' => $this->toHumanTime(true),
+            'hour' => $this->hour,
+            'hourHuman' => $this->format('g'),
+            'minute' => $this->minute,
+            'minuteHuman' => $this->format('i'),
+            'second' => $this->second,
+            'secondHuman' => $this->format('s'),
+            'ampm' => $this->format('a'),
+        ];
     }
 
     protected function lookupValue($model, $value)
