@@ -152,7 +152,7 @@ CREATE TABLE `churchAttr` (
 
 LOCK TABLES `churchAttr` WRITE;
 /*!40000 ALTER TABLE `churchAttr` DISABLE KEYS */;
-INSERT INTO `churchAttr` VALUES (1,'parish',1),(2,'cathedral',1),(3,'basilica',1),(4,'shrine',1),(5,'mission',1),(6,'dioceseId',1),(7,'streetNote',1),(8,'street',3),(9,'zip',1),(10,'site',1),(11,'nickname',1);
+INSERT INTO `churchAttr` VALUES (1,'isParish',1),(2,'isCathedral',1),(3,'isBasilica',1),(4,'isShrine',1),(5,'isMission',1),(6,'territoryId',1),(7,'streetNote',1),(8,'street',3),(9,'zip',1),(10,'site',1),(11,'nickname',1);
 /*!40000 ALTER TABLE `churchAttr` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -723,9 +723,10 @@ CREATE TABLE `event` (
   KEY `stopMonth` (`stopMonth`),
   KEY `startWeek` (`startWeek`),
   KEY `stopWeek` (`stopWeek`),
-  KEY `startDay` (`startDay`),
   KEY `stopDay` (`stopDay`),
   KEY `eventFilterId` (`eventFilterId`),
+  KEY `startTime` (`startTime`,`stopTime`,`id`),
+  KEY `startDay_2` (`startDay`,`stopDay`,`startTime`,`stopTime`,`id`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`eventTypeId`) REFERENCES `eventType` (`id`),
   CONSTRAINT `event_ibfk_2` FOREIGN KEY (`churchId`) REFERENCES `church` (`id`),
   CONSTRAINT `event_ibfk_3` FOREIGN KEY (`startMonth`) REFERENCES `month` (`id`),
@@ -908,7 +909,7 @@ CREATE TABLE `eventType` (
 
 LOCK TABLES `eventType` WRITE;
 /*!40000 ALTER TABLE `eventType` DISABLE KEYS */;
-INSERT INTO `eventType` VALUES (1,'confession'),(2,'Eucharist');
+INSERT INTO `eventType` VALUES (1,'Confession'),(2,'Mass');
 /*!40000 ALTER TABLE `eventType` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2070,4 +2071,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-03  2:50:32
+-- Dump completed on 2015-07-06  1:21:30
