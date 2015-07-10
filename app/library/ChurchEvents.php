@@ -6,38 +6,73 @@ class ChurchEvents
 {
     public $churches;
 
+    public $churchMeta;
+
     public $events;
 
-    public $order;
+    public $eventMeta;
 
-    public $display;
+    public $currentDay;
 
-    public $today;
+    public $lookups;
 
-    public $searchDate;
-
-    public $lookup;
-
-    public $chains;
+    protected $lookup;
 
     public function __construct(Temporal $searchDate = null)
     {
         $this->churches = [];
+        $this->churchMeta = ['sortKeys' => [], 'ordered' => []];
         $this->events = [];
-        $this->order = [];
-        $this->display = [];
-        $this->lookup = Lookup::getshared();
-        $this->chains = (object) [
+        $this->eventMeta = ['sortKeys' => [], 'ordered' => [], 'days' => []];
+        $temporal = ($searchDate) ? $searchDate : new Temporal();
+        $this->currentDay = $temporal->toDateString();
+
+        for ($i = 0; $i < 7; $i++) {
+            if ($i) {
+                $temporal->addDay();
+            }
+
+            $dateProps = $temporal->getDateProperties();
+            $this->eventMeta['days'][$dateProps['date']] = $dateProps;
+        }
+        
+        $this->lookup = $temporal->getLookup();
+        $weekdays = $this->lookup->getLookup('Day');
+        $filters = $this->lookup->getLookup('EventFilter');
+        $types = $this->lookup->getLookup('EventType');
+
+        $this->lookups = [
+            'weekdays' => [
+                'getValue' => $weekdays,
+                'getId' => array_flip($weekdays),
+                'orderedIds' => array_keys($weekdays),
+                'orderedValues' => array_values($weekdays),
+            ],
+            'filters' => [
+                'getValue' => $filters,
+                'getId' => array_flip($filters),
+                'orderedIds' => array_keys($filters),
+                'orderedValues' => array_values($filters),
+            ],
+            'types' => [
+                'getValue' => $types,
+                'getId' => array_flip($types),
+                'orderedIds' => array_keys($types),
+                'orderedValues' => array_values($types),
+            ],
+        ];
+
+        $this->find();
+
+        /* this might be useful one day
+        $this->chains = [
             'jurisdiction' => ['parish', 'diocese', 'province', 'suiIuris'],
             'praxis' => ['rite', 'tradition', 'archtradition'],
             'location' => ['city', 'county', 'state', 'country', 'continent'],
             'affiliation' => ['religious', 'religious1', 'religious2', 'religious3', 'religiousTop'],
             'properties' => array_values($this->lookup->getLookup('ChurchAttr')),
         ];
-        $temporal = new Temporal(null, null, $this->lookup);
-        $this->today = $temporal->getDateProperties();
-        $this->searchDate = ($searchDate) ? $searchDate->getDateProperties() : $this->today;
-        $this->find();
+        */
     }
 
     public function find()
@@ -48,6 +83,8 @@ class ChurchEvents
             'church.parishId',
             'parish.parish',
             'parish.identifier as parishIdentifier',
+            'parishProp.id as isIntentionalId',
+            'parishProp.value as isIntentional',
             'parish.dioceseId',
             'diocese.diocese',
             'diocese.provinceId',
@@ -91,6 +128,9 @@ class ChurchEvents
             Model::nsModel('Church') . ' AS church',
             'LEFT JOIN ' . Model::nsModel('Parish') . ' AS parish ' .
                 'ON church.parishId = parish.id',
+            'LEFT JOIN ' . Model::nsModel('ParishProp') . ' AS parishProp ON (' .
+                'parishProp.parishId = parish.id AND ' .
+                'parishProp.parishAttrId = :intentionalId:)',
             'LEFT JOIN ' . Model::nsModel('Diocese') . ' AS diocese ' .
                 'ON parish.dioceseId = diocese.id',
             'LEFT JOIN ' . Model::nsModel('Province') . ' AS province ' .
@@ -129,10 +169,9 @@ class ChurchEvents
                 'ON churchProp.churchAttrId = churchAttr.id',
         ]);
         $order = "church.id, churchProp.churchAttrId, churchProp.multi";
-        $order = "church.id";
         $phql = "SELECT $select FROM $from ORDER BY $order";
-
-        foreach (Model::query($phql) as $row) {
+        $bind = ['intentionalId' => $this->lookup->getId('parishAttr', 'isIntentional')];
+        foreach (Model::query($phql, $bind) as $row) {
             $props = (empty($row->churchPropId)) ? [] : [
                 "{$row->attr}Id" => $row->churchPropId,
                 $row->attr => $row->value
@@ -156,16 +195,24 @@ class ChurchEvents
                 } else {
                     $this->churches[$row->churchId]->$key = $value;
 
+                    if ($key == 'site') {
+                        $this->churches[$row->churchId]->siteAT = rtrim(preg_replace(
+                            '/^(http)?s?:?\/?\/?(www\.)?/i',
+                            '',
+                            $value
+                        ), " /");
+
+                    }
+
                     if ($key == 'nickname') {
                         $names = "$value {$row->church} ";
-                        $padId = str_pad($row->churchId, 10, '0', STR_PAD_LEFT);
-                        $this->order["$names$padId"] = $row->churchId;
+                        $padId = $this->padId($row->churchId);
+                        $this->churchMeta['sortKeys']["$names$padId"] = $row->churchId;
                     }
                 }
             }
         }
 
-        ksort($this->order);
         $bind = array_keys($this->churches);
         $select = implode(", ", [
             'event.id AS eventId',
@@ -256,7 +303,15 @@ class ChurchEvents
                     }
                 }
 
-                $this->display[$row->eventId] = $this->isDisplayable($row->eventId);
+                $times = implode(" ", [
+                    $row->startDay,
+                    $row->stopDay,
+                    $row->startTime,
+                    $row->stopTime,
+                ]);
+                $padId = $this->padId($row->eventId);
+                $this->eventMeta['sortKeys']["$times$padId"] = $row->eventId;
+                $this->eventMeta['ordered'][] = $row->eventId;
             }
 
             foreach ($props as $key => $value) {
@@ -269,26 +324,141 @@ class ChurchEvents
                 }
             }
         }
+
+        ksort($this->churchMeta['sortKeys']);
+        foreach ($this->churchMeta['sortKeys'] as $churchId) {
+            $this->churchMeta['ordered'][] = $churchId;
+            $this->makeDescription($churchId);
+            $this->makeSchedule($churchId);
+        }
     }
 
-    public function isDisplayable($eventId)
+    protected function padId($id)
     {
-        $result = false;
+        return str_pad($id, 10, '0', STR_PAD_LEFT);
+    }
 
-        if (isset($this->events[$eventId]) && isset($this->searchDate)) {
-            $e = $this->events[$eventId];
-            $s = $this->searchDate;
+    protected function makeDescription($churchId)
+    {
+        $church = $this->churches[$churchId];
+        $description = $church->nickname . ' is';
+        $religious = [];
+        $and = '';
 
-            if ($e->startDate <= $s->date && $s->date <= $e->stopDate &&
-                $e->startMonth <= $s->month && $s->month <= $e->stopMonth &&
-                $e->startWeek <= $s->weekOfMonth && $s->weekOfMonth <= $e->stopWeek &&
-                $e->startDay <= $s->dayOfWeek && $s->dayOfWeek <= $e->stopDay &&
-                ($e->eventFilterId == 1 || $e->eventFilterId == 7)
-            ) {
-                $result = $e->churchId;
+        if (!empty($church->isBasilica)) {
+            $description .= "$and a minor basilica";
+            $and = ' and';
+        }
+
+        if (!empty($church->isShrine)) {
+            $description .= "$and a {$church->isShrine} shrine";
+            $and = ' and';
+        }
+
+        if (!empty($church->isCathedral)) {
+            $description .= "$and the {$church->isCathedral}";
+        } elseif (!empty($church->isParish)) {
+            $description .= "$and a {$church->isParish} church";
+
+            if ($church->isParish != "parish") {
+                $description .= " of {$church->parish} Parish";
+            }
+        } else {
+            $mission = (empty($church->isMission)) ? '' : ' mission';
+            $parish = (empty($church->parish)) ? '' : " of {$church->parish} Parish";
+            $description .= "$and a$mission church";
+        }
+
+        if (!empty($church->isIntentional)) {
+            $description .= " for {$church->isIntentional} Catholics";
+        }
+
+        foreach (['', '1', '2', '3', 'Top'] as $r) {
+            $key = "religious$r";
+            if (!empty($church->$key)) {
+                $religious[] = $church->$key;
             }
         }
 
-        return $result;
+        if (!empty($church->diocese)) {
+            $description .= ' of the ' . implode(', ', [
+                $church->diocese,
+                $church->province,
+                $church->suiIuris
+            ]);
+
+            if ($religious) {
+                $description .= '. It is administered by ' . implode(', ', $religious);
+            }
+        } elseif ($religious) {
+            $description .= ' of the ' . implode(', ', $religious);
+        }
+
+        $this->churches[$churchId]->description = "$description.";
+    }
+
+    protected function makeSchedule($churchId)
+    {
+        $schedule = [];
+        $blank = [1 => [], 2 => [], 3 => [], 4 => [], 5 => [], 6 => [], 7 => []];
+
+        foreach ($this->churches[$churchId]->events as $eventId) {
+            $event = $this->events[$eventId];
+            if ($event->startDate <= $this->currentDay && $this->currentDay <= $event->stopDate) {
+                $name = $event->event;
+                $type = $event->eventType;
+                $filter = $event->eventFilter;
+
+                if (empty($schedule[$filter])) {
+                    $schedule[$filter] = [];
+                }
+
+                if (empty($schedule[$filter][$type])) {
+                    $schedule[$filter][$type] = $blank;
+                }
+
+                $weekOfMonth = '';
+                $timespan = $event->startTimeHumanLong;
+                $note = (empty($event->note)) ? '' : $event->note;
+
+                if ($event->startWeek != 1 || $event->stopWeek != 5) {
+                    $separator = '';
+
+                    for ($i = $event->startWeek; $i <= $event->stopWeek; $i++) {
+                        $weekOfMonth .= $separator . $this->lookup->getValue('Week', $i);
+                        $separator = ($i == $event->stopWeek) ? ' and ' : ', ';
+                    }
+                }
+
+                if ($type != 'Mass') {
+                    if ($event->startAmpm == $event->stopAmpm) {
+                        $timespan = $event->startTimeHuman;
+                    }
+
+                    $timespan .= " - {$event->stopTimeHumanLong}";
+                }
+
+                for ($i = $event->startDay; $i <= $event->stopDay; $i++) {
+                    if (empty($schedule[$filter][$type][$i][$name])) {
+                        $schedule[$filter][$type][$i][$name] = [];
+                    }
+
+                    $day = $this->lookups['weekdays']['getValue'][$i];
+                    $timeToday = $timespan;
+
+                    if ($weekOfMonth) {
+                        $timeToday = "$weekOfMonth $day of the month:<br /> $timespan";
+                    }
+
+                    if ($note) {
+                        $timeToday .= " ($note)";
+                    }
+
+                    $schedule[$filter][$type][$i][$name][] = $timeToday;
+                }
+            }
+        }
+
+        $this->churches[$churchId]->schedule = $schedule;
     }
 }

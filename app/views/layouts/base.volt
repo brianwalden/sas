@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="end">
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,42 +11,42 @@
         {{ assets.outputJs('headerJs') }}
     </head>
     <body>
-        <nav class="navbar navbar-bw">
+        <nav class="navbar navbar-sas">
             <div class="container-fluid">
-                <div class="row">
-                    <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand navlink-index navlink" href="/">St. Anthony Search</a>
+                </div>
 
-                        <div class="navbar-header">
-                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                                <span class="sr-only">Toggle navigation</span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                                <span class="icon-bar"></span>
-                            </button>
-                            <a class="navbar-brand navlink-index" href="/">St. Anthony Search</a>
-                        </div>
-
-                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                            <ul class="nav navbar-nav">
-                                <!--li class="navlink-contact"><a href="/contact">Contact</a></li>
-                                <li class="navlink-resume"><a href="/resume">Resume</a></li>
-                                <li class="navlink-transcript"><a href="/transcript">Transcript</a></li-->
-                            </ul>
-                        </div>
-
-                    </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <!--li class="navlink-contact"><a class="navlink" href="/contact">Contact</a></li>
+                        <li class="navlink-resume"><a class="navlink" href="/resume">Resume</a></li>
+                        <li class="navlink-transcript"><a class="navlink" href="/transcript">Transcript</a></li-->
+                    </ul>
                 </div>
             </div>
         </nav>
 
         <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
-                    {{ content() }}
-                </div>
-            </div>
-        <div>
+            {{ content() }}
+        </div>
 
         {{ assets.outputJs('footerJs') }}
+
+        <script>
+            $(document).ready(function() {
+                saintAnthonySearch.initialize('{{controller}}');
+                {% if !(onload is empty) %}
+                {{ onload }}
+                {% endif %}
+            });   
+        </script>
+        
     </body>
 </html>

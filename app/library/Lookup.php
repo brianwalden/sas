@@ -76,7 +76,7 @@ class Lookup
                 }
             }
 
-            $result = $this->lookups[$model];
+            $result = $this->lookups[$this->modelShared->model];
         }
 
         return ($result && $flip) ? array_flip($result) : $result;

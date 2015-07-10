@@ -14,6 +14,6 @@ class IndexController extends BaseController
             $googleCharts => false,
             'js/timeline.js' => true,
         ]]]);
-        $this->view->setVars(['churchEvents' => new ChurchEvents()]);
+        $this->view->setVars(['onload' => 'sasTimeline.initialize()']);
     }
 }

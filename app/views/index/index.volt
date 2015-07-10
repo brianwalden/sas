@@ -1,94 +1,46 @@
 {# index/index.volt #}
 
-<h1 class="h3">Albany Confession Times <small>{{ temporal.toHumanDate() }}</small></h1>
+<h1 class="h2 text-center pageHead">St. Anthony Help Me Find: Confession in Albany</h1>
+
+<div class="alert alert-sas searchAlert text-center" role="alert">Searching...</div>
+
+<!-- not proud about using a table here, but I need 7 columns -->
+<table class="table table-condensed dayTable hidden">
+    <thead>
+        <tr>
+            <th class="text-center dayTh dayTh-1 topLeft">
+                <button type="button" class="btn btn-link dayLink dayLink-1">
+                </button>
+            </th>
+            <th class="text-center dayTh dayTh-2">
+                <button type="button" class="btn btn-link dayLink dayLink-2">
+                </button>
+            </th>
+            <th class="text-center dayTh dayTh-3">
+                <button type="button" class="btn btn-link dayLink dayLink-3">
+                </button>
+            </th>
+            <th class="text-center dayTh dayTh-4">
+                <button type="button" class="btn btn-link dayLink dayLink-4">
+                </button>
+            </th>
+            <th class="text-center dayTh dayTh-5">
+                <button type="button" class="btn btn-link dayLink dayLink-5">
+                </button
+            </th>
+            <th class="text-center dayTh dayTh-6">
+                <button type="button" class="btn btn-link dayLink dayLink-6">
+                </button>
+            </th>
+            <th class="text-center dayTh dayTh-7 topRight">
+                <button type="button" class="btn btn-link dayLink dayLink-7">
+                </button>
+            </th>
+        </tr>
+    </thead>
+</table>
+
 
 <div id="timeline"></div>
 
-{% for i, churchId in churchEvents.order %}
-    {% set church = churchEvents.churches[churchId] %}
-<div class="church-{{ churchId }}-main hidden">
-    <h2 class="h4">{{ church.church }}</h2>
-    <div class="row">
-        <div class="col-sm-6 ">
-            <div>
-    <?php echo (is_array($church->street)) ? implode('<br />', $church->street) : $church->street; ?>
-            </div>
-            <div>{{ church.city }}, {{ church.state2 }} {{ church.zip }}</div>
-        </div>
-        <div class="col-sm-6 ">
-            <div><b>Confession:</b></div>
-    {% for j, eventId in church.events %}
-            <div>
-        {% set event = churchEvents.events[eventId] %}
-        {% if event.eventFilterId == 1 or event.eventFilterId == 7 %}
-            {% if event.startWeek != 1 or event.stopWeek != 5 %}
-                {{ event.startW }}
-                {% if event.startWeek != event.stopWeek %} - {{ event.stopW }}{% endif %}
-            {% endif %}
-            {% if event.startDay == 1 and event.stopDay == 7 %}
-                Everyday
-            {% else %} 
-                {{ event.startD }}
-                {% if event.startDay != event.stopDay %} - {{ event.stopD }}{% endif %}
-            {% endif %}
-            {% if event.startWeek != 1 or event.stopWeek != 5 %}
-                of the month
-            {% endif %}
-                , {{ event.startTimeHumanLong }} - {{ event.stopTimeHumanLong }}
-        {% endif %}
-            </div>
-    {% endfor %}
-        </div>
-    </div>
-</div>
-{% endfor %}
-
-<script>
-    timelineData = {
-        divId: 'timeline',
-        columns: [
-            { type: 'string', id: 'Church' },
-            { type: 'string', id: 'Sacrament' },
-            { type: 'date', id: 'Start' },
-            { type: 'date', id: 'End' },
-        ],
-        data: [
-{% for churchId, church in churchEvents.churches %}
-    {% for i, eventId in church.events %}
-        {% if churchEvents.display[eventId] %}
-            {% set event = churchEvents.events[eventId] %}
-            [
-                '{{ church.nickname|escape_js }}',
-                '{{ event.event ? event.event : event.eventType }}',
-                new Date(
-                    {{ churchEvents.searchDate.year }},
-                    {{ churchEvents.searchDate.monthJs }},
-                    {{ churchEvents.searchDate.day }},
-                    {{ event.startHour }},
-                    {{ event.startMinute }},
-                    {{ event.startSecond }}
-                ),
-                new Date(
-                    {{ churchEvents.searchDate.year }},
-                    {{ churchEvents.searchDate.monthJs }},
-                    {{ churchEvents.searchDate.day }},
-                    {{ event.stopHour }},
-                    {{ event.stopMinute }},
-                    {{ event.stopSecond }}
-                ),
-            ],
-        {% endif %}
-    {% endfor %}
-{% endfor %}
-        ],
-    };
-
-    $(document).ready(function() {
-        var unhide = {{ churchEvents.display|json_encode }};
-        $.each(unhide, function(eventId, churchId) {
-            if (churchId) {
-                $('.church-' + churchId + '-main').removeClass('hidden');
-            }
-        });
-    });
-</script>
+<div class="churches"></div>

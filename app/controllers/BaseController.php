@@ -3,6 +3,7 @@
 namespace Brianwalden\SAS\Controllers;
 
 use Phalcon\Mvc\Controller;
+use Phalcon\Http\Response;
 
 abstract class BaseController extends Controller
 {
@@ -13,15 +14,16 @@ abstract class BaseController extends Controller
     protected static $defaultAssets = [
         'headerCss' => [
             'addCss' => [
-                '//fonts.googleapis.com/css?family=Montserrat' => false,
-                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css' => false,
+                '//fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic,400italic,600italic,700italic,800italic' => false,
+                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css' => false,
                 'css/style.css' => true,
             ],
         ],
         'headerJs' => ['addJs' => [ '//code.jquery.com/jquery-2.1.4.min.js' => false ]],
         'footerJs' => [
             'addJs' => [
-                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js' => false,
+                '//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js' => false,
+                '//cdn.jsdelivr.net/jquery.scrollto/2.1.0/jquery.scrollTo.min.js' => false,
                 'js/script.js' => true,
             ],
         ],
@@ -100,5 +102,20 @@ abstract class BaseController extends Controller
                 }
             }
         }
+    }
+
+    protected function ajaxResponse($content, $toJson = true)
+    {
+        if (!$this->request->isAjax()) {
+            $content = json_encode(['error' => "Invalid Request"]);
+        } elseif ($toJson) {
+            $content = json_encode($content);
+        }
+
+        $response = new Response();
+        $response->setStatusCode(200, 'OK');
+        $response->setContentType('application/json', 'UTF-8');
+        $response->setContent($content);
+        return $response;
     }
 }

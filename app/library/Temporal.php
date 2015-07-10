@@ -11,7 +11,7 @@ class Temporal extends Carbon
     public function __construct($time = null, $tz = null, Lookup $lookup = null)
     {
         parent::__construct($time, $tz);
-        $this->lookup = $lookup;
+        $this->setLookup($lookup);
     }
 
     public function getNew($time = null, $tz = null)
@@ -33,17 +33,17 @@ class Temporal extends Carbon
 
     public function toWeekDayString()
     {
-        return $this->lookupValue('Day', $this->getWeekDay());
+        return $this->lookup->getValue('Day', $this->getWeekDay());
     }
 
     public function toMonthWeekString()
     {
-        return $this->lookupValue('Week', $this->getMonthWeek());
+        return $this->lookup->getValue('Week', $this->getMonthWeek());
     }
 
     public function toMonthString()
     {
-        return $this->lookupValue('Month', $this->month);
+        return $this->lookup->getValue('Month', $this->month);
     }
 
     public function toHumanDate($includeDayOfWeek = false)
@@ -60,7 +60,7 @@ class Temporal extends Carbon
 
     public function getDateProperties()
     {
-        return (object) [
+        return [
             'date' => $this->toDateString(),
             'dateHuman' => $this->toHumanDate(),
             'dateHumanLong' => $this->toHumanDate(true),
@@ -74,12 +74,13 @@ class Temporal extends Carbon
             'weekOfMonthHuman' => $this->toMonthWeekString(),
             'dayOfWeek' => $this->getWeekDay(),
             'dayOfWeekHuman' => $this->toWeekDayString(),
+            'isToday' => $this->isToday(),
         ];
     }
 
     public function getTimeProperties()
     {
-        return (object) [
+        $timeArray = [
             'time' => $this->toTimeString(),
             'timeHuman' => $this->toHumanTime(),
             'timeHumanLong' => $this->toHumanTime(true),
@@ -91,14 +92,29 @@ class Temporal extends Carbon
             'secondHuman' => $this->format('s'),
             'ampm' => $this->format('a'),
         ];
-    }
 
-    protected function lookupValue($model, $value)
-    {
-        if (!isset($this->lookup)) {
-            $this->lookup = Lookup::getShared();
+        if ($this->hour == 12 && !$this->minute) {
+            $timeArray['timeHuman'] = 'noon';
+            $timeArray['timeHumanLong'] = 'noon';
+        } elseif ($this->hour == 24 && !$this->minute) {
+            $timeArray['timeHuman'] = 'midnight';
+            $timeArray['timeHumanLong'] = 'midnight';
         }
 
-        return $this->lookup->getValue($model, $value);
+        return $timeArray;
+    }
+
+    public function getLookup()
+    {
+        return $this->lookup;
+    }
+
+    public function setLookup(Lookup $lookup = null)
+    {
+        if ($lookup) {
+            $this->lookup = $lookup;
+        } elseif (empty($this->lookup)) {
+            $this->lookup = Lookup::getShared();
+        }
     }
 }
