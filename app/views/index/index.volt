@@ -1,44 +1,47 @@
 {# index/index.volt #}
 
-<h1 class="h2 text-center pageHead">St. Anthony Help Me Find: Confession in Albany</h1>
+<h1 class="text-center">St. Anthony Help Me Find: Confession in Albany</h1>
 
-<div class="alert alert-sas searchAlert text-center" role="alert">Searching...</div>
+<div class="alert alert-sas search-alert text-center" role="alert">Searching...</div>
+
+<div class="alert alert-sas instructions hidden" role="alert">
+    <div class="row">
+        <div class="col-xs-10 col-sm-offset-1 message">
+            Click a bar in the timeline for details
+        </div>
+        <div class="col-xs-2 col-sm-1 text-right">
+            <button type="button" class="btn btn-link remove">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                <span class="sr-only">Close</span>
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- not proud about using a table here, but I need 7 columns -->
-<table class="table table-condensed dayTable hidden">
-    <thead>
-        <tr>
-            <th class="text-center dayTh dayTh-1 topLeft">
-                <button type="button" class="btn btn-link dayLink dayLink-1">
-                </button>
-            </th>
-            <th class="text-center dayTh dayTh-2">
-                <button type="button" class="btn btn-link dayLink dayLink-2">
-                </button>
-            </th>
-            <th class="text-center dayTh dayTh-3">
-                <button type="button" class="btn btn-link dayLink dayLink-3">
-                </button>
-            </th>
-            <th class="text-center dayTh dayTh-4">
-                <button type="button" class="btn btn-link dayLink dayLink-4">
-                </button>
-            </th>
-            <th class="text-center dayTh dayTh-5">
-                <button type="button" class="btn btn-link dayLink dayLink-5">
-                </button
-            </th>
-            <th class="text-center dayTh dayTh-6">
-                <button type="button" class="btn btn-link dayLink dayLink-6">
-                </button>
-            </th>
-            <th class="text-center dayTh dayTh-7 topRight">
-                <button type="button" class="btn btn-link dayLink dayLink-7">
-                </button>
-            </th>
-        </tr>
-    </thead>
-</table>
+<div class="row day-nav hidden topLeft topRight">
+    <div class="col-xs-1 day-col-1 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-2 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-3 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-4 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-5 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-6 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+    <div class="col-xs-1 day-col-7 text-center">
+        <button type="button" class="btn btn-link"></button>
+    </div>
+</div>
 
 
 <div id="timeline"></div>

@@ -7,12 +7,12 @@ var sasTimeline = {
             { type: 'date', id: 'Start' },
             { type: 'date', id: 'End' },
         ],
-        rowHeight: 41,
+        rowHeight: 41, //google charts timeline row height
     },
     initialize: function(divId) {
         var me = this;
 
-        $('.dayLink').click(function() {
+        $('.day-nav button').click(function() {
             me.currentDay = this.id;
             me.refresh(me.currentDay);
         });
@@ -33,52 +33,36 @@ var sasTimeline = {
     },
     writeDayLinks: function() {
         var me = this;
-        var size = saintAnthonySearch.getBootstrapSize();
-
-        if (size == 'xs') {
-            $('.dayLink').addClass('btn-xs');
-            $('.dayTh').addClass('dayTh-xs');
-        }
 
         $.each(me.eventMeta.days, function(day, props) {
             var id = props['dayOfWeek'];
-            var weekday = props['dayOfWeekHuman'];
-            var month = props['monthHuman'] + ' '; 
-            var showDay = props['dayHuman'];
-
-            if (size == 'sm') {
-                month = month.substr(0, 3) + ' '; 
-            } else if (size == 'xs') {
-                weekday = weekday.substr(0, 3);
-                month = props['month'] + '/';
-                showDay = props['day'];
-            }
-
-            $('.dayLink-' + id).prop('id', props['date']).html(
-                weekday + '<br /><span class="small">' + month + showDay + '</span>'
-            );
+            
+            $('.day-col-' + id + ' button').prop('id', props['date']).html([
+                props['dayOfWeekHuman'].substr(0, 3),
+                '<span class="hidden-xs">' + props['dayOfWeekHuman'].substr(3) + '</span><br />\n', 
+                '<span class="small">\n',
+                    '<span class="visible-xs-inline">' + props['month'] + '/</span>',
+                    '<span class="hidden-xs">' + props['monthHuman'].substr(0, 3),
+                        '<span class="hidden-sm">' + props['monthHuman'].substr(3) + '</span>\n',
+                    '</span>',
+                    '<span class="visible-xs-inline">' + props['day'] + '</span>',
+                    '<span class="hidden-xs">' + props['dayHuman'] + '</span>\n',
+                '</span>\n',
+            ].join(''));
 
             if (day == me.currentDay) {
-                $('.dayTh-' + id).addClass('active');
+                $('.day-col-' + id).addClass('active');
             } else {
-                $('.dayTh-' + id).removeClass('active');
+                $('.day-col-' + id).removeClass('active');
             }
         });
 
-        $('.searchAlert').addClass('hidden');
-        $('.dayTable').removeClass('hidden');
+        $('.search-alert').addClass('hidden');
+        $('.day-nav').removeClass('hidden');
     },
     writeChurches: function() {
         var me = this;
         var html = '';
-        var size = saintAnthonySearch.getBootstrapSize();
-        var headClass = 'h3';
-        var buttonClass = '';
-
-        if (size == 'xs') {
-            headClass = 'h4';
-            buttonClass = 'btn-sm';
-        }
 
         $.each(me.churchMeta.ordered, function(i, churchId) {
             var church = me.churches[churchId];
@@ -97,17 +81,18 @@ var sasTimeline = {
             html += [
                 '<div class="panel panel-sas church church-' + churchId + ' hidden">',
                     '<div class="panel-heading">',
-                        '<div class="pull-right">',
-                            '<button type="button" class="btn btn-link ' + buttonClass + ' scrollUp">',
-                                '<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>',
-                                '<span class="sr-only">Scroll:</span>',
-                                'Top',
-                            '</button>',
+                        '<div class="row">',
+                            '<div class="col-xs-9 col-sm-11">',
+                                '<h2>' + church.church + '</h2>',
+                            '</div>',
+                            '<div class="col-xs-3 col-sm-1 text-right scrollUp">',
+                                '<button type="button" class="btn btn-link">',
+                                    '<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>',
+                                    '<span class="sr-only">Scroll:</span>',
+                                    'Top',
+                                '</button>',
+                            '</div>',
                         '</div>',
-                        '<div class="pull-left">',
-                            '<h2 class="' + headClass + '">' + church.church + '</h2>',
-                        '</div>',
-                        '<div class="clearfix"></div>',
                     '</div>',
                     '<div class="panel-body">',
                         address,
@@ -120,8 +105,8 @@ var sasTimeline = {
         });
 
         $('.churches').html(html);
-        $('.scrollUp').off('click');
-        $('.scrollUp').on('click', function() {
+        $('.scrollUp button').off('click');
+        $('.scrollUp button').on('click', function() {
             $.scrollTo(0, saintAnthonySearch.scrollDuration);
         });
 
@@ -130,8 +115,6 @@ var sasTimeline = {
     writeSchedules: function(churchId) {
         var me = this;
         var tablecount = 0;
-        var size = saintAnthonySearch.getBootstrapSize();
-        var headClass = (size == 'xs') ? 'h5 semi-strong' : 'h4';
 
         $.each(me.churchMeta.ordered, function(i, churchId) {
             var church = me.churches[churchId];
@@ -146,7 +129,7 @@ var sasTimeline = {
             $.each(me.lookups.filters.orderedValues, function(i, filter) {
                 if (church.schedule[filter]) {
                     var heading =  (!i && tablecount <= 1) ? '' :
-                        '<h3 class="' + headClass + ' text-center">' + filter + ' Schedule</h3>';
+                        '<h3 class="text-center">' + filter + ' Schedule</h3>\n';
                     var table = [me.lookups.weekdays.orderedValues];
                     var row = 0;
 
@@ -163,23 +146,37 @@ var sasTimeline = {
                                 });
 
                                 keys.sort();
-                                var td = '<div class="semi-strong">' + type + '</div>';
+                                var td = '<span class="semi-strong">' + type + '</span>\n';
+                                td += '<span class="hidden-xs"><br /></span>\n';
 
                                 if (keys.length) {
-                                    var first = true;
+                                    var firstKey = true;
 
                                     $.each(keys, function(l, name) {
-                                        td += [
-                                            (first) ? '' : '<div>&nbsp;</div>', //HACK!
-                                            (name) ? '<div><em>' + name + '</em><div>' : '',
-                                            '<div>' +
-                                                church.schedule[filter][type][day][name]
-                                                    .join('</div><div>') +
-                                            '</div>',
-                                        ].join(''); 
+                                        var lastKey = (l == (keys.length - 1));
+
+                                        if (!firstKey) {
+                                            td += '<br />\n';
+                                        } else if (!lastKey) {
+                                            td += '<span class="visible-xs-inline"><br /></span>\n';
+                                        }
+
+                                        if (name) {
+                                            td += '<em>' + name + '</em>\n';
+                                            td += '<span class="hidden-xs"><br /></span>\n';
+                                        }
+                                        
+                                        td += church.schedule[filter][type][day][name]
+                                            .join(
+                                                '<span class="hidden-xs"><br /></span>' +
+                                                '<span class="visible-xs-inline"> | </span>'
+                                            );
+                                        td += '<br />\n';
+
+                                        firstKey = false;
                                     });
                                 } else {
-                                    td += '<div>&mdash;</div>';
+                                    td += '&mdash;\n';
                                 }
 
                                 table[row].push(td);
@@ -187,38 +184,50 @@ var sasTimeline = {
                         }
                     });
 
+                    /**
+                     * This creates a 7 column wide table that collapses down
+                     * to 1 column for xs screen sizes. To do it, I create two
+                     * tables, one that's only visible for xs sizes, and one that's
+                     * visible the rest of the time. I tried to do it in one shot
+                     * but there was no simple way to get individual divs to all
+                     * have the same height like cells of the same table row do.
+                     */
                     html += (html) ? '\n' + heading : heading;
-                    html += '<div class="visible-xs-block">\n<table class="table">\n';
+                    var filterClass = 'filter' + me.lookups.filters.getId[filter];
+                    html += '<div class="visible-xs-block">\n';
+                    html += '<table class="table ' + filterClass + '">\n<tbody>\n';
 
                     for (var y = 0; y < 7; y++) {
+                        var dayClass = 'weekday' + me.lookups.weekdays.getId[table[0][y]];
+
                         for (var x = 0; x <= row; x++) {
-                            td = (x == 0) ? 'th' : 'td';
-                            html += '<tr><' + td + '>' + table[x][y] + '</' + td + '></tr>\n';
+                            var td = (x == 0) ? "th" : "td";
+                            html += '<tr>\n<' + td + ' class="' + dayClass + '">\n';
+                            html += table[x][y] + '</td>\n</tr>\n';
                         }
                     }
 
-                    html += '</table>\n</div>\n<div class="hidden-xs">\n<table class="table">\n';
+                    html += '</tbody>\n</table>\n</div>\n';
+                    html += '<div class="hidden-xs">\n<table class="table ' + filterClass + '">\n';
 
                     for (var x = 0; x <= row; x++) {
-                        if (x == 0) {
-                            html += '<thead>\n'; 
-                        } else if (x == 1) {
-                            html += '<tbody>\n';
+                        if (x <= 1) {
+                            html += (x) ? '<tbody>\n' : '<thead>\n';
                         }
 
                         html += '<tr>\n';
 
                         for (var y = 0; y < 7; y++) {
-                            td = (x == 0) ? 'th' : 'td';
-                            html += '<' + td + '>' + table[x][y] + '</' + td + '>\n';
+                            var td = (x == 0) ? "th" : "td";
+                            var dayClass = 'weekday' + me.lookups.weekdays.getId[table[0][y]];
+                            html += '<' + td + ' class="' + dayClass + '">\n';
+                            html += table[x][y] + '</td>\n';
                         }
 
                         html += '</tr>\n';
 
-                        if (x == 0) {
-                            html += '</thead>\n'; 
-                        } else if (x == row) {
-                            html += '</tbody>\n';
+                        if (!x || x == row) {
+                            html += (x) ? '</tbody>\n' : '</thead>\n';
                         }
                     }
 
@@ -233,6 +242,8 @@ var sasTimeline = {
         var me = this;
         me.timeline.dataTable = new google.visualization.DataTable();
         me.timeline.data = [];
+        me.timeline.rowsToChurchIds = { };
+        var row = 0;
         var uniqueChurches = { };
         var height = me.timeline.rowHeight + 10; //magic number, 10 makes it work no scroll bar
 
@@ -254,7 +265,10 @@ var sasTimeline = {
                         me.getTime('start', eventId),
                         me.getTime('stop', eventId),
                     ]);
-                    
+
+                    me.timeline.rowsToChurchIds[row] = churchId;
+                    row++;
+
                     if (!uniqueChurches.hasOwnProperty(me.churches[churchId].nickname)) {
                         height += me.timeline.rowHeight;
                         uniqueChurches[me.churches[churchId].nickname] = true;
@@ -293,6 +307,14 @@ var sasTimeline = {
             ],
         };
         me.timeline.chart.draw(me.timeline.dataTable, me.timeline.options);
+        google.visualization.events.addListener(me.timeline.chart, 'select', function() {
+            $.scrollTo(
+                '.church-' + me.timeline.rowsToChurchIds[me.timeline.chart.getSelection()[0].row],
+                saintAnthonySearch.scrollDuration
+            );
+        });
+        $('.instructions').removeClass('hidden');
+        me.highlightSchedules();
     },
     calculateDisplayable: function(singleDay) {
         var me = this;
@@ -332,6 +354,21 @@ var sasTimeline = {
                 $('.church-' + churchId).removeClass('hidden');
             }
         });
+    },
+    highlightSchedules: function() {
+        var me = this;
+        var dayClass = 'weekday' + me.eventMeta.days[me.currentDay].dayOfWeek;
+        var selector = [];
+        $('.schedule table th, .schedule table td').removeClass('active');
+        
+        $.each([1, 2], function(i, id) {
+            $.each(['th', 'td'], function(j, td) {
+                selector.push('.filter' + id + ' ' + td + '.' + dayClass);
+            });
+        });
+
+        $(selector.join(', ')).addClass('active');
+
     },
     getTime: function(which, eventId) {
         var me = this;

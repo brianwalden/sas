@@ -54,7 +54,7 @@ class Temporal extends Carbon
 
     public function toHumanTime($includeAmPm = false)
     {
-        $includeAmPm = ($includeAmPm) ? 'a' : '';
+        $includeAmPm = ($includeAmPm) ? ' a' : '';
         return $this->format("g:i$includeAmPm");
     }
 
@@ -93,12 +93,19 @@ class Temporal extends Carbon
             'ampm' => $this->format('a'),
         ];
 
+        $timeArray['timeHumanSchedule'] = $timeArray['timeHuman'];
+        $timeArray['timeHumanSchedule'] .= ($timeArray['ampm'] == 'am') ?
+            '<span class="hidden-sm"> </span>a<span class="hidden-sm">m</span>' :
+            '<span class="hidden-sm"> </span>p<span class="hidden-sm">m</span>';
+
         if ($this->hour == 12 && !$this->minute) {
             $timeArray['timeHuman'] = 'noon';
             $timeArray['timeHumanLong'] = 'noon';
+            $timeArray['timeHumanSchedule'] = 'noon';
         } elseif ($this->hour == 24 && !$this->minute) {
             $timeArray['timeHuman'] = 'midnight';
             $timeArray['timeHumanLong'] = 'midnight';
+            $timeArray['timeHumanSchedule'] = 'midnight';
         }
 
         return $timeArray;

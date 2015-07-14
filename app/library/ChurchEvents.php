@@ -87,6 +87,8 @@ class ChurchEvents
             'parishProp.value as isIntentional',
             'parish.dioceseId',
             'diocese.diocese',
+            'dioceseProp.id as isMetroId',
+            'dioceseProp.value as isMetro',
             'diocese.provinceId',
             'province.province',
             'province.suiIurisId',
@@ -130,9 +132,12 @@ class ChurchEvents
                 'ON church.parishId = parish.id',
             'LEFT JOIN ' . Model::nsModel('ParishProp') . ' AS parishProp ON (' .
                 'parishProp.parishId = parish.id AND ' .
-                'parishProp.parishAttrId = :intentionalId:)',
+                'parishProp.parishAttrId = :isIntentionalId:)',
             'LEFT JOIN ' . Model::nsModel('Diocese') . ' AS diocese ' .
                 'ON parish.dioceseId = diocese.id',
+            'LEFT JOIN ' . Model::nsModel('DioceseProp') . ' AS dioceseProp ON (' .
+                'dioceseProp.dioceseId = diocese.id AND ' .
+                'dioceseProp.dioceseAttrId = :isMetroId:)',
             'LEFT JOIN ' . Model::nsModel('Province') . ' AS province ' .
                 'ON diocese.provinceId = province.id',
             'LEFT JOIN ' . Model::nsModel('SuiIuris') . ' AS suiIuris ' .
@@ -170,7 +175,10 @@ class ChurchEvents
         ]);
         $order = "church.id, churchProp.churchAttrId, churchProp.multi";
         $phql = "SELECT $select FROM $from ORDER BY $order";
-        $bind = ['intentionalId' => $this->lookup->getId('parishAttr', 'isIntentional')];
+        $bind = [
+            'isIntentionalId' => $this->lookup->getId('parishAttr', 'isIntentional'),
+            'isMetroId' => $this->lookup->getId('dioceseAttr', 'isMetro'),
+        ];
         foreach (Model::query($phql, $bind) as $row) {
             $props = (empty($row->churchPropId)) ? [] : [
                 "{$row->attr}Id" => $row->churchPropId,
@@ -381,17 +389,19 @@ class ChurchEvents
         }
 
         if (!empty($church->diocese)) {
-            $description .= ' of the ' . implode(', ', [
-                $church->diocese,
-                $church->province,
-                $church->suiIuris
-            ]);
+            $description .= " of the {$church->diocese}";
 
-            if ($religious) {
-                $description .= '. It is administered by ' . implode(', ', $religious);
+            if (empty($church->isMetro)) {
+                $description .= ", {$church->province}";
             }
         } elseif ($religious) {
             $description .= ' of the ' . implode(', ', $religious);
+        }
+
+        $description .= ". It is a {$church->rite} rite church of the {$church->suiIuris}";
+
+        if (!empty($church->diocese) && $religious) {
+            $description .= ' administered by ' . implode(', ', $religious);
         }
 
         $this->churches[$churchId]->description = "$description.";
@@ -418,7 +428,7 @@ class ChurchEvents
                 }
 
                 $weekOfMonth = '';
-                $timespan = $event->startTimeHumanLong;
+                $timespan = $event->startTimeHumanSchedule;
                 $note = (empty($event->note)) ? '' : $event->note;
 
                 if ($event->startWeek != 1 || $event->stopWeek != 5) {
@@ -435,7 +445,9 @@ class ChurchEvents
                         $timespan = $event->startTimeHuman;
                     }
 
-                    $timespan .= " - {$event->stopTimeHumanLong}";
+                    $timespan .= '<span class="hidden-sm"> </span>-' .
+                        '<span class="hidden-sm"> </span>' .
+                        $event->stopTimeHumanSchedule;
                 }
 
                 for ($i = $event->startDay; $i <= $event->stopDay; $i++) {
@@ -447,11 +459,13 @@ class ChurchEvents
                     $timeToday = $timespan;
 
                     if ($weekOfMonth) {
-                        $timeToday = "$weekOfMonth $day of the month:<br /> $timespan";
+                        $timeToday = "$weekOfMonth $day of the month: " .
+                            '<span class="hidden-xs"><br /></span>' + $timespan;
                     }
 
                     if ($note) {
-                        $timeToday .= " ($note)";
+                        $timeToday .= ' <span class="hidden-xs"><br /></span>' .
+                            '<span class="eventNote">(' . $note . ')</span>';
                     }
 
                     $schedule[$filter][$type][$i][$name][] = $timeToday;

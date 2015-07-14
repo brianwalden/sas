@@ -3,8 +3,10 @@ saintAnthonySearch = {
     initialize: function(controller) {
         var me = this;
         me.controller = controller;
-        me.makeSizeAdjustments();
         me.setNavbar();
+        $('.instructions .remove').click(function() {
+            $('.instructions').addClass('hidden');
+        });
     },
     setNavbar: function() {
         var me = this;
@@ -12,27 +14,6 @@ saintAnthonySearch = {
         var suffix = (me.controller == 'index') ? '' : ' > a';
         $(className).addClass('active');
         $(className + suffix).append(' <span class="sr-only">(current)</span>');
-    },
-    makeSizeAdjustments: function() {
-        var me = this;
-        var size = me.getBootstrapSize();
-
-        if (size == 'xs') {
-            $('.pageHead').removeClass('h2').addClass('h3');
-        }
-    },
-    getBootstrapSize: function () {
-        var me = this;
-        var width = $(document).width();
-        var size = 'xs';
-        
-        if (width >= 992) {
-            size = (width >= 1200) ? 'lg' : 'md';
-        } else if (width >= 768) {
-            size = 'sm';
-        }
-
-        return size;
     },
     fillContact: function() {
         var me = this;
