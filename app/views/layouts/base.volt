@@ -11,31 +11,35 @@
         {{ assets.outputJs('headerJs') }}
     </head>
     <body>
-        <nav class="navbar navbar-sas">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand navlink-index navlink" href="/">St. Anthony Search</a>
-                </div>
+        <header>
+            <nav class="navbar navbar-sas">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand navlink-index navlink" href="/">St. Anthony Search</a>
+                    </div>
 
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <!--li class="navlink-contact"><a class="navlink" href="/contact">Contact</a></li>
-                        <li class="navlink-resume"><a class="navlink" href="/resume">Resume</a></li>
-                        <li class="navlink-transcript"><a class="navlink" href="/transcript">Transcript</a></li-->
-                    </ul>
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="navlink-about"><a class="navlink" href="/about">About</a></li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        </header>
 
         <div class="container-fluid">
             {{ content() }}
         </div>
+
+        <footer class="text-center light italic">
+            Saint Anthony Search is a lay project and is not associated with the Catholic Church or any of its particular churches
+        </footer>
 
         {{ assets.outputJs('footerJs') }}
 
@@ -47,6 +51,5 @@
                 {% endif %}
             });   
         </script>
-        
     </body>
 </html>
