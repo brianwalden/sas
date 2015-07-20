@@ -36,6 +36,19 @@ class ChurchEvents
             $this->eventMeta['days'][$dateProps['date']] = $dateProps;
         }
         
+        $this->eventMeta['colors'] = [
+            1 => '#b71c1c',
+            2 => '#673ab7',
+            3 => '#ffc107',
+            4 => '#4caf50',
+            5 => '#607d8b',
+            6 => '#880e4f',
+            7 => '#2196f3',
+            8 => '#ff5722',
+            9 => '#009688',
+            10 => '#e91e63',
+        ];
+
         $this->lookup = $temporal->getLookup();
         $weekdays = $this->lookup->getLookup('Day');
         $filters = $this->lookup->getLookup('EventFilter');
@@ -51,8 +64,8 @@ class ChurchEvents
             'filters' => [
                 'getValue' => $filters,
                 'getId' => array_flip($filters),
-                'orderedIds' => array_keys($filters),
-                'orderedValues' => array_values($filters),
+                'orderedIds' => [1, 2, 9, 10, 11, 3, 4, 5, 6, 7, 8],
+                'orderedValues' => [],
             ],
             'types' => [
                 'getValue' => $types,
@@ -61,6 +74,11 @@ class ChurchEvents
                 'orderedValues' => array_values($types),
             ],
         ];
+
+        foreach ($this->lookups['filters']['orderedIds'] as $id) {
+            $this->lookups['filters']['orderedValues'][] =
+                $this->lookups['filters']['getValue'][$id];
+        }
 
         $this->find();
 
@@ -275,8 +293,6 @@ class ChurchEvents
         ]);
         $where = 'event.churchId in ' . Model::in($bind);
         $order = implode(", ", [
-            'event.startDay',
-            'event.stopDay',
             'event.startTime',
             'event.stopTime',
             'event.id',
@@ -436,11 +452,13 @@ class ChurchEvents
 
                     for ($i = $event->startWeek; $i <= $event->stopWeek; $i++) {
                         $weekOfMonth .= $separator . $this->lookup->getValue('Week', $i);
-                        $separator = ($i == $event->stopWeek) ? ' and ' : ', ';
+                        $separator = (($i + 1) == $event->stopWeek) ? ' and ' : ', ';
                     }
                 }
 
-                if ($type != 'Mass') {
+                if ($event->startTime == "00:00:00" && $event->stopTime == "24:00:00") {
+                    $timespan = "all day";
+                } elseif ($type == 'Confession' || $type == 'Adoration') {
                     if ($event->startAmpm == $event->stopAmpm) {
                         $timespan = $event->startTimeHuman;
                     }
@@ -459,8 +477,10 @@ class ChurchEvents
                     $timeToday = $timespan;
 
                     if ($weekOfMonth) {
-                        $timeToday = "$weekOfMonth $day of the month: " .
-                            '<span class="hidden-xs"><br /></span>' + $timespan;
+                        $timeToday = ucfirst(
+                            "$weekOfMonth $day: <span class=\"hidden-xs\"><br /></span>" .
+                            $timespan
+                        );
                     }
 
                     if ($note) {

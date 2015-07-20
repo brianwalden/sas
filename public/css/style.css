@@ -13,11 +13,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-weight: 400;
 }
 
+.page-head { margin-top: 0px; }
+
 /* LINKS **********************************************************************/
 
 a, .btn-link { color: #bf360c; }
 
-a:focus, a:hover, .btn-link:focus, .btn-link:hover {color: #bf360c; }
+a:focus, a:hover, .btn-link:focus, .btn-link:hover { color: #bf360c; }
 
 .navlink { font-weight: 600; }
 
@@ -215,6 +217,13 @@ td.active, tr.active { background-color: #ffecb3 !important; }
 .break { margin-bottom: 20px;}
 
 address { margin-bottom: 0px;}
+
+.more-schedules { padding-top: 0px; }
+
+.more-schedules button { 
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
 
 /* ALERT **********************************************************************/
 

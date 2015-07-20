@@ -8,6 +8,8 @@ var sasTimeline = {
             { type: 'date', id: 'End' },
         ],
         rowHeight: 41, //google charts timeline row height
+        conflictHeight: 30, //google charts height for each "stacked" time bar per row
+        showInstructions: true,
     },
     initialize: function(divId) {
         var me = this;
@@ -15,6 +17,11 @@ var sasTimeline = {
         $('.day-nav button').click(function() {
             me.currentDay = this.id;
             me.refresh(me.currentDay);
+        });
+
+        $('.instructions .remove').click(function() {
+            me.timeline.showInstructions = false;
+            $('.instructions').addClass('hidden');
         });
 
         $.post('/ajax/getChurches', function(data) {
@@ -28,6 +35,7 @@ var sasTimeline = {
     refresh: function(singleDay) {
         var me = this;
         me.writeDayLinks();
+        me.highlightSchedules();
         me.calculateDisplayable(singleDay);
         me.drawTimeline();
     },
@@ -52,6 +60,23 @@ var sasTimeline = {
 
             if (day == me.currentDay) {
                 $('.day-col-' + id).addClass('active');
+                var holiday = false;
+                
+                if (props['isHolyDay']) {
+                    holiday = props['isHolyDay'];
+                } else if (props['isVigil']) {
+                    holiday = props['isVigil'];
+                } else if (props['isHoliday']) {
+                    holiday = props['isHoliday']
+                }
+
+                if (holiday) {
+                    $('.holiday-today').html((props['isToday']) ? 'Today' : props['dayOfWeekHuman']);
+                    $('.holiday-name').html(holiday)
+                    $('.holiday').removeClass('hidden');
+                } else {
+                    $('.holiday').addClass('hidden');
+                }
             } else {
                 $('.day-col-' + id).removeClass('active');
             }
@@ -114,22 +139,18 @@ var sasTimeline = {
     },
     writeSchedules: function(churchId) {
         var me = this;
-        var tablecount = 0;
 
         $.each(me.churchMeta.ordered, function(i, churchId) {
             var church = me.churches[churchId];
             var html = '';
+            var scheduleCount = 0;
             
-            if (!tablecount) {
-                $.each(church.schedule, function(k, v) {
-                    tablecount++;
-                });
-            }
+            $.each(church.schedule, function(k, v) {
+                scheduleCount++;
+            });
 
             $.each(me.lookups.filters.orderedValues, function(i, filter) {
                 if (church.schedule[filter]) {
-                    var heading =  (!i && tablecount <= 1) ? '' :
-                        '<h3 class="text-center">' + filter + ' Schedule</h3>\n';
                     var table = [me.lookups.weekdays.orderedValues];
                     var row = 0;
 
@@ -184,6 +205,14 @@ var sasTimeline = {
                         }
                     });
 
+                    var heading = church.nickname;
+                    
+                    if (i || scheduleCount > 1) {
+                        heading += ' ' + filter.replace(/ \(.*\)/, '');
+                    }
+
+                    heading += ' Schedule';
+
                     /**
                      * This creates a 7 column wide table that collapses down
                      * to 1 column for xs screen sizes. To do it, I create two
@@ -192,10 +221,11 @@ var sasTimeline = {
                      * but there was no simple way to get individual divs to all
                      * have the same height like cells of the same table row do.
                      */
-                    html += (html) ? '\n' + heading : heading;
-                    var filterClass = 'filter' + me.lookups.filters.getId[filter];
+                    html += (html) ? '\n' : '';
+                    html += '<div class="filter filter-' + me.lookups.filters.getId[filter] + ' hidden">\n';
+                    html += '<h3 class="text-center">' + heading + '</h3>\n';
                     html += '<div class="visible-xs-block">\n';
-                    html += '<table class="table ' + filterClass + '">\n<tbody>\n';
+                    html += '<table class="table">\n<tbody>\n';
 
                     for (var y = 0; y < 7; y++) {
                         var dayClass = 'weekday' + me.lookups.weekdays.getId[table[0][y]];
@@ -208,7 +238,7 @@ var sasTimeline = {
                     }
 
                     html += '</tbody>\n</table>\n</div>\n';
-                    html += '<div class="hidden-xs">\n<table class="table ' + filterClass + '">\n';
+                    html += '<div class="hidden-xs">\n<table class="table">\n';
 
                     for (var x = 0; x <= row; x++) {
                         if (x <= 1) {
@@ -231,11 +261,23 @@ var sasTimeline = {
                         }
                     }
 
-                    html += '</table>\n</div>\n';
+                    html += '</table>\n</div>\n</div\n>';
                 }
             });
 
+            if (scheduleCount > 1) {
+                html += '<div class="panel-body more-schedules text-center">\n';
+                html += '<button type="button" class="btn btn-link" id="more-schedules-' + churchId + '">\n';
+                html += 'Show more schedules\n</button>\n</div>\n';
+            }
+
             $('.schedule-' + churchId).html(html);
+        });
+
+        $('.more-schedules button').click(function() {
+            var id = this.id.split('-')[2];
+            $('.schedule-' + id + ' .filter').removeClass('hidden');
+            $('.schedule-' + id + ' div.more-schedules').addClass('hidden');
         });
     },
     drawTimeline: function() {
@@ -244,8 +286,10 @@ var sasTimeline = {
         me.timeline.data = [];
         me.timeline.rowsToChurchIds = { };
         var row = 0;
-        var uniqueChurches = { };
+        var conflicts = { };
         var height = me.timeline.rowHeight + 10; //magic number, 10 makes it work no scroll bar
+        var typeNames = { };
+        var colors = [];
 
         if (me.timeline.hasOwnProperty('chart')) {
             me.timeline.chart.clearChart();
@@ -258,21 +302,72 @@ var sasTimeline = {
         $.each(me.churchMeta.ordered, function(i, churchId) {
             $.each(me.churches[churchId].events, function(j, eventId) {
                 if (me.eventMeta.days[me.currentDay].display[eventId]) {
+                    var e = me.events[eventId];
                     me.timeline.data.push([
                         me.churches[churchId].nickname,
-                        (me.events[eventId].event) ?
-                            me.events[eventId].event : me.events[eventId].eventType,
+                        (e.event) ? e.event : e.eventType,
                         me.getTime('start', eventId),
                         me.getTime('stop', eventId),
                     ]);
 
+                    /**
+                     * this is so we can send the user to the church details when
+                     * they click on a bar in the chart
+                     */
                     me.timeline.rowsToChurchIds[row] = churchId;
                     row++;
 
-                    if (!uniqueChurches.hasOwnProperty(me.churches[churchId].nickname)) {
-                        height += me.timeline.rowHeight;
-                        uniqueChurches[me.churches[churchId].nickname] = true;
+                    /**
+                     * Tell google how to color each event
+                     */
+                    if (!typeNames.hasOwnProperty(e.eventTypeId)) {
+                        typeNames[e.eventTypeId] = { };
                     }
+
+                    if (!typeNames[e.eventTypeId].hasOwnProperty(e.event)) {
+                        typeNames[e.eventTypeId][e.event] = true;
+                        colors.push(me.eventMeta.colors[e.eventTypeId]);
+                    }
+
+                    /**
+                     * this is a big complicated process to figure out if google
+                     * will need to use more than 1 row per church to display all
+                     * the events and adjust the chart height accordingly
+                     */
+                    if (!conflicts.hasOwnProperty(churchId)) {
+                        height += me.timeline.rowHeight;
+                        conflicts[churchId] = [[]];
+                    }
+
+                    var conflict = false;
+                    var stack = 0;
+
+                    $.each(conflicts[churchId], function (i, segments) {
+                        conflict = false;
+
+                        $.each(segments, function(j, times) {
+                            if (
+                                (e.startTime >= times.start && e.startTime < times.stop) ||
+                                (e.stopTime > times.start && e.stopTime <= times.stop)
+                            ) {
+                                conflict = true;
+                                return false;
+                            }
+                        });
+
+                        if (!conflict) {
+                            stack = i;
+                            return false;
+                        }
+                    });
+
+                    if (conflict) {
+                        height += me.timeline.conflictHeight;
+                        stack = conflicts[churchId].length;
+                        conflicts[churchId][stack] = [];
+                    }
+
+                    conflicts[churchId][stack].push({ start: e.startTime, stop: e.stopTime });
                 }
             });
         });
@@ -280,41 +375,19 @@ var sasTimeline = {
         $('#' + me.timeline.divId).height(height);
         me.timeline.dataTable.addRows(me.timeline.data);
         me.timeline.chart = new google.visualization.Timeline(document.getElementById(me.timeline.divId));
-        me.timeline.options = {
-            tooltip: { trigger : 'none' },
-            height: height,
-            backgroundColor: '#fff8e1',
-            colors: [
-                '#795548',
-                '#ffc107',
-                '#f44336',
-                '#673ab7',
-                '#2196f3',
-                '#4caf50',
-                '#ff5722',
-                '#e91e63',
-                '#3f51b5',
-                '#8bc34a',
-                '#ffeb3b',
-                '#607d8b',
-                '#9c27b0',
-                '#03a9f4',
-                '#ff9800',
-                '#009688',
-                '#00bcd4',
-                '#cddc39',
-                '#9e9e9e',
-            ],
-        };
+        me.timeline.options = { height: height, backgroundColor: '#fff8e1', colors: colors };
         me.timeline.chart.draw(me.timeline.dataTable, me.timeline.options);
+        
         google.visualization.events.addListener(me.timeline.chart, 'select', function() {
             $.scrollTo(
                 '.church-' + me.timeline.rowsToChurchIds[me.timeline.chart.getSelection()[0].row],
                 saintAnthonySearch.scrollDuration
             );
         });
-        $('.instructions').removeClass('hidden');
-        me.highlightSchedules();
+
+        if (me.timeline.showInstructions) {
+            $('.instructions').removeClass('hidden');
+        }
     },
     calculateDisplayable: function(singleDay) {
         var me = this;
@@ -338,13 +411,16 @@ var sasTimeline = {
                 }
 
                 if (!me.eventMeta.days[day].display.hasOwnProperty(eventId)) {
-                    me.eventMeta.days[day].display[eventId] = (
+                    var isDisplayable = (
                         e.startDate <= d.date && d.date <= e.stopDate &&
-                        e.startMonth <= d.month && d.month <= e.stopMonth &&
-                        e.startWeek <= d.weekOfMonth && d.weekOfMonth <= e.stopWeek &&
-                        e.startDay <= d.dayOfWeek && d.dayOfWeek <= e.stopDay &&
-                        e.eventFilterId <= 2
-                    ) ? e.churchId : false;
+                        e.startMonth <= d.month && d.month <= e.stopMonth && ((
+                            e.startWeek <= d.weekOfMonth && d.weekOfMonth <= e.stopWeek
+                            ) || e.startWeek == 6 && d.isLastWeekOfMonth
+                        ) && e.startDay <= d.dayOfWeek && d.dayOfWeek <= e.stopDay
+                    ) ? me.filter(e.eventFilterId, day) : false;
+
+                    me.eventMeta.days[day].display[eventId] = (isDisplayable) ?
+                        e.churchId : false;
                 }
             });
 
@@ -355,20 +431,79 @@ var sasTimeline = {
             }
         });
     },
+    filter: function (eventFilterId, currentDay) {
+        var me = this;
+        var pass = false;
+
+        if (!currentDay || !me.eventMeta.days.hasOwnProperty(currentDay)) {
+            currentDay = me.currentDay;
+        }
+
+        var day = me.eventMeta.days[me.currentDay];
+
+        if (eventFilterId == 1) {
+            pass = true;
+        } else if (eventFilterId == 2) {
+            if (!day.isHolyDay && !day.isVigil) {
+                pass = true;
+            }
+        } else if (eventFilterId == 3) {
+            if (day.isHolyDay) {
+                pass = true;
+            }
+        } else if (eventFilterId == 4) {
+            if (day.isVigil) {
+                pass = true;
+            }
+        } else if (eventFilterId == 5) {
+            if (day.isHoliday) {
+                pass = true;
+            }
+        } else if (eventFilterId == 6) {
+            if (day.isSeason == "Advent") {
+                pass = true;
+            }
+        } else if (eventFilterId == 7) {
+            if (day.isSeason == "Lent") {
+                pass = true;
+            }
+        } else if (eventFilterId == 8) {
+            if (day.isSeason == "Advent" || day.isSeason == "Lent") {
+                pass = true;
+            }
+        } else if (eventFilterId == 9) {
+            if (!day.isHolyDay && !day.isHoliday) {
+                pass = true;
+            }
+        } else if (eventFilterId == 10) {
+            if (!day.isHolyDay && !day.isHoliday && !day.isVigil) {
+                pass = true;
+            }
+        } else if (eventFilterId == 11) {
+            if (day.isSeason != "Lent") {
+                pass = true;
+            }
+        }
+
+        return pass;
+    },
     highlightSchedules: function() {
         var me = this;
         var dayClass = 'weekday' + me.eventMeta.days[me.currentDay].dayOfWeek;
         var selector = [];
         $('.schedule table th, .schedule table td').removeClass('active');
         
-        $.each([1, 2], function(i, id) {
-            $.each(['th', 'td'], function(j, td) {
-                selector.push('.filter' + id + ' ' + td + '.' + dayClass);
-            });
+        $.each(me.lookups.filters.orderedIds, function(i, id) {
+            $('.filter-' + id).addClass('hidden');
+            if (me.filter(id)) {
+                $('.filter-' + id).removeClass('hidden');
+                $.each(['th', 'td'], function(j, td) {
+                    selector.push('.filter-' + id + ' table ' + td + '.' + dayClass);
+                });
+            }
         });
 
         $(selector.join(', ')).addClass('active');
-
     },
     getTime: function(which, eventId) {
         var me = this;

@@ -1,8 +1,14 @@
 {# index/index.volt #}
 
-<h1 class="text-center">St. Anthony Help Me Find: Confession in Albany</h1>
+<h1 class="page-head text-center">St. Anthony Help Me Find: Churches in Albany</h1>
 
 <div class="alert alert-sas search-alert text-center" role="alert">Searching...</div>
+
+<div class="alert alert-sas holiday hidden text-center">
+    <span class="holiday-today"></span> is <span class="holiday-name"></span>
+    and schedules may be different from what's listed here.
+    Please confirm all times with the church.
+</div>
 
 <div class="alert alert-sas instructions hidden" role="alert">
     <div class="row">
