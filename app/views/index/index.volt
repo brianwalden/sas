@@ -24,7 +24,6 @@
     </div>
 </div>
 
-<!-- not proud about using a table here, but I need 7 columns -->
 <div class="row day-nav hidden topLeft topRight">
     <div class="col-xs-1 day-col-1 text-center">
         <button type="button" class="btn btn-link"></button>

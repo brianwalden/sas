@@ -1,27 +1,27 @@
 {# about/index.volt #}
 
-<h1 class="page-head text-center">About Saint Anthony Search</h1>
+<h1 class="page-head text-center">About St. Anthony Search</h1>
 
 <p class="lead">
-    Saint Anthony Search gives you a visual overview of the daily schedules of
+    St. Anthony Search gives you a visual overview of the daily schedules of
     sacraments and public  devotions for all the Catholic churches in Albany, NY
     so you can fit what's available into your schedule.
 </p>
 
 <p>
-    One neat thing about Saint Anthony search is that it always tries to display
+    One neat thing about St. Anthony search is that it always tries to display
     schedules based on the actual date in time. So if a church has a schedule
     for holy days, national holidays, or even entire liturgical seasons listed
-    on its site, Saint Anthony Search will figure out if the current day fits
+    on its site, St. Anthony Search will figure out if the current day fits
     any of those special circumstances and display the appropriate schedule.
 </p>
 
 <p class="break">
-    Saint Anthony Search currently includes all churches I could find with an
+    St. Anthony Search currently includes all churches I could find with an
     Albany mailing address (basically Albany, Colonie and Loudonville). All data
     shown is public information I obtained from the churches' websites and
     bulletins. You can contact me for any reason (suggestions, corrections, complaints,
-    etc.) at brianwalden<span class="contact-domain"></span>. Saint Anthony
+    etc.) at brianwalden<span class="contact-domain"></span>. St. Anthony
     Search is open source and available at <span class="contact-github"></span>.
 </p>
 
@@ -51,7 +51,7 @@
                 <li>Add an admin section for managing churches and events</li>
                 <li>
                     Add automatic data collection, or at least automatic alerts that
-                    a church's schedule on their site had changed
+                    a church's schedule on their site has changed
                 </li>
             </ul>
         </div>

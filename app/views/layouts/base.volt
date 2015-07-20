@@ -38,7 +38,8 @@
         </div>
 
         <footer class="text-center light italic">
-            Saint Anthony Search is a lay project and is not associated with the Catholic Church or any of its particular churches
+            St. Anthony Search is a lay project and is not associated with the
+            Catholic Church or any of its particular churches
         </footer>
 
         {{ assets.outputJs('footerJs') }}
