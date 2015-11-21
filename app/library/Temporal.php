@@ -123,7 +123,7 @@ class Temporal extends Carbon
         $monthWeek = $this->getMonthWeek();
         $isNotMoved = ($weekDay >= 3 && $weekDay <= 6);
 
-        if ($this->month == 1 && $this->day == 6) {
+        if ($this->month == 1 && $this->day == 1) {
             if ($isNotMoved) {
                 $holyDay = 'the Solemnity of the Blessed Virgin Mary, the Mother of God';
             }
@@ -174,7 +174,7 @@ class Temporal extends Carbon
     public function isVigil()
     {
         $vigil = false;
-        $holyDay = $this->copy()->addDay()->isHoliday();
+        $holyDay = $this->copy()->addDay()->isHolyDay();
         $noVigil = [
             'the Solemnity of the Resurrection of the Lord (Easter)' => true,
             'Ash Wednesday' => true,
@@ -186,7 +186,7 @@ class Temporal extends Carbon
             'Holy Saturday' => true,
         ];
 
-        if ($holyDay && empty($noVigil($holyDay))) {
+        if ($holyDay && empty($noVigil[$holyDay])) {
             $vigil = "the Vigil of $holyDay";
         }
 
@@ -267,7 +267,7 @@ class Temporal extends Carbon
         } elseif ($this->month == 11) {
             if ($this->day == 11 && $weekDay != 1) {
                 $holiday = "Veterans Day";
-            } elseif ($this->weekDay == 5 && $this->monthWeek == 4) {
+            } elseif ($weekDay == 5 && $monthWeek == 4) {
                 $holiday = "Thanksgiving";
             }
         }
